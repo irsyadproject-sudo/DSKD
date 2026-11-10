@@ -1,0 +1,62 @@
+@startuml Flow_Task
+skinparam ActivityBackgroundColor #F4F6F9
+skinparam ActivityBorderColor #5e72e4
+skinparam ActivityDiamondBackgroundColor #eef1fb
+skinparam ActivityDiamondBorderColor #5e72e4
+skinparam ArrowColor #344767
+skinparam FontSize 13
+title Flowchart — Manajemen Task
+
+|PM / SA|
+start
+:Klik menu **Task** → **+ Tambah Task**;
+:Isi form:\n- Proyek\n- Assignee (Team Member)\n- Judul & Deskripsi\n- Prioritas & Deadline\n- Status & Progress;
+:Klik **Simpan**;
+
+if (Validasi OK?) then (Ya)
+  :Task tersimpan;
+  :Assignee menerima notifikasi;
+else (Tidak)
+  :Tampilkan error validasi;
+  stop
+endif
+
+|Team Member (Assignee)|
+:Login → Dashboard;
+:Lihat daftar task yang ditugaskan;
+:Klik **Detail Task**;
+
+if (Mengerjakan?) then (Ya)
+  :Mulai mengerjakan task;
+  :Update **Progress** (0–100%);
+  :Klik **Simpan Progress**;
+
+  if (Progress ≥ 100?) then (Ya)
+    :Status otomatis → **Done**;
+  else (Tidak)
+    :Status tetap **In Progress**;
+  endif
+
+elseif (Ada masukan?) then
+  :Tambah **Komentar** pada task;
+  stop
+
+else (Selesai)
+  :Menunggu persetujuan dari Client;
+  stop
+endif
+
+|Client|
+:Review hasil pekerjaan;
+if (Memuaskan?) then (Ya)
+  :Klik **Approve (Setujui)**;
+  :Status → **Done**;\nProgress → 100%;
+  :Task selesai;
+  stop
+else (Tidak)
+  :Ajukan **Revisi**;
+  :Isi deskripsi revisi;
+  :Status task → **In Progress**;
+  stop
+endif
+@enduml

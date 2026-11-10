@@ -1,0 +1,127 @@
+@startuml Flow_AlurProsesKerja
+skinparam ActivityBackgroundColor #F4F6F9
+skinparam ActivityBorderColor #5e72e4
+skinparam ActivityDiamondBackgroundColor #eef1fb
+skinparam ActivityDiamondBorderColor #5e72e4
+skinparam ActivityStartColor #5e72e4
+skinparam ActivityEndColor #2dce89
+skinparam ArrowColor #344767
+skinparam PartitionBackgroundColor #FFFFFF
+skinparam PartitionBorderColor #e9ecef
+skinparam FontSize 13
+skinparam NoteFontSize 11
+skinparam NoteBackgroundColor #fff4e5
+skinparam NoteBorderColor #ff9f43
+title Flowchart — Alur Proses Kerja Sistem DPMS
+
+|#F8F9FA|**SUPER ADMIN**|
+start
+:Login ke sistem;
+:Dashboard — lihat statistik\nseluruh sistem;
+
+partition "**Persiapan Awal**" {
+  :Buat akun **Project Manager**;
+  :Buat akun **Team Member**\n(Programmer, Designer, dll);
+  :Buat akun **Client**\n(atau Client daftar sendiri);
+}
+
+|#E8F0FE|**PROJECT MANAGER**|
+partition "**Inisialisasi Proyek**" {
+  :Buat proyek baru;\nIsi nama, client, deadline,\nbudget, prioritas;
+  :Status proyek: **Draft**;
+  :Tambah **anggota tim**\n(Team Member + sub-role);
+  :Ubah status → **Berjalan**;
+}
+
+partition "**Pembagian Task**" {
+  :Buat task-task;\nIsi judul, deskripsi,\nprioritas, deadline;
+  :Assign task ke **Team Member**;
+  :Task masuk kolom **To Do**\ndi Kanban Board;
+}
+
+|#E8F5E9|**TEAM MEMBER**|
+partition "**Pengerjaan Task**" {
+  :Lihat task di Dashboard\natau Kanban Board;
+  :Kerjakan task;
+  :Update **Progress** (0–100%);
+  :Drag task ke **In Progress**\ndi Kanban Board;
+  note right
+    Progress ≥ 100%
+    status otomatis → Done
+  end note
+}
+
+|#FFF3E0|**CLIENT**|
+partition "**Review & Persetujuan**" {
+  :Lihat progress proyek\ndi Dashboard;
+
+  if (Hasil sesuai?) then (Ya)
+    :Klik **Approve** task;\nStatus → **Done**;
+  else (Tidak)
+    :Ajukan **Revisi**;\nIsi deskripsi revisi;
+    note right
+      Status task otomatis
+      kembali → In Progress
+    end note
+  endif
+}
+
+|#E8F0FE|**PROJECT MANAGER**|
+partition "**Proses Revisi**" {
+  :Terima notifikasi revisi;
+  :Ubah status revisi → **Diproses**;
+  :Arahan Team Member\nuntuk perbaikan;
+
+ |#E8F5E9|**TEAM MEMBER**|
+  :Perbaiki task sesuai\nrevisi client;
+  :Update progress;
+}
+
+|#FFF3E0|**CLIENT**|
+:Review hasil revisi;
+if (Sesuai?) then (Ya)
+  :Status revisi → **Selesai**;\nApprove task;
+else (Tidak)
+  :Ajukan revisi lagi;
+  note right
+    Loop hingga client
+    menyetujui
+  end note
+endif
+
+|#E8F0FE|**PROJECT MANAGER**|
+partition "**Penyelesaian Proyek**" {
+  :Semua task **Done**;
+  :Ubah status proyek → **Review**\n(menunggu final approval);
+}
+
+|#FFF3E0|**CLIENT**|
+:Final review proyek;
+if (Disetujui?) then (Ya)
+  :Status proyek → **Selesai**;
+else (Tidak)
+  :Status proyek → **Revisi**;\nAjukan revisi global;
+endif
+
+|#E8F0FE|**PROJECT MANAGER**|
+partition "**Pelaporan**" {
+  :Buka menu **Laporan**;
+  :Filter data proyek & task;
+  :Export **CSV** atau **PDF**;
+  :Kirim laporan ke stakeholder;
+}
+
+|#F8F9FA|**SUPER ADMIN**|
+:Monitor seluruh aktivitas\ndari Dashboard;
+:Kelola user jika diperlukan;
+
+stop
+
+legend bottom right
+  | Warna | Keterangan |
+  |<#F8F9FA>  | Super Admin |
+  |<#E8F0FE>  | Project Manager / Team Member |
+  |<#FFF3E0>  | Client |
+endlegend
+
+@enduml

@@ -1,0 +1,35 @@
+@startuml Flow_Laporan
+skinparam ActivityBackgroundColor #F4F6F9
+skinparam ActivityBorderColor #5e72e4
+skinparam ActivityDiamondBackgroundColor #eef1fb
+skinparam ActivityDiamondBorderColor #5e72e4
+skinparam ArrowColor #344767
+skinparam FontSize 13
+title Flowchart — Laporan & Export
+
+|SA / PM / Client|
+start
+:Klik menu **Laporan**;
+:Halaman laporan terbuka\n(dftar proyek & task);
+
+:Atur **filter** sesuai kebutuhan:\n- Rentang tanggal\n- Status proyek/task\n- Prioritas\n- Client / PM / Assignee;
+:Klik **Terapkan Filter**;
+:Data proyek & task terfilter\n ditampilkan di tabel;
+
+if (Export?) then (CSV)
+  :Klik **Export CSV**;
+  :Pilih data:\n[Proyek] atau [Task];
+  :File `.csv` diunduh;
+  stop
+
+elseif (PDF) then
+  :Klik **Export PDF**;
+  :Pilih data:\n[Proyek] atau [Task];
+  :File `.pdf` (landscape A4)\ndiunduh;
+  stop
+
+else (Lihat Saja)
+  :Review data di halaman;
+  stop
+endif
+@enduml

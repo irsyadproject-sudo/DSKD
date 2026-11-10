@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERD - Toko Motor Online (DPMS)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+        .header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+            padding: 48px 20px 40px;
+            text-align: center;
+            border-bottom: 3px solid #3b82f6;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(59,130,246,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .header h1 {
+            font-size: 2.2rem;
+            color: #60a5fa;
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 0 30px rgba(96,165,250,0.15);
+        }
+        .header p {
+            color: #94a3b8;
+            font-size: 1rem;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+        .legend {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            padding: 14px 32px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 32px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid #1e3a5f;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+            backdrop-filter: blur(12px);
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.78rem;
+            color: #94a3b8;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid #334155;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        .legend-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+            color: #e2e8f0;
+            transform: translateY(-1px);
+        }
+        .legend-line {
+            width: 28px;
+            height: 4px;
+            border-radius: 2px;
+            box-shadow: 0 0 6px currentColor;
+        }
+        .legend-pk { background: #a78bfa; color: #a78bfa; }
+        .legend-fk { background: #67e8f9; color: #67e8f9; }
+        .legend-uk { background: #6ee7b7; color: #6ee7b7; }
+        .legend-enum { background: #fbbf24; color: #fbbf24; }
+        .legend-nn { background: #fca5a5; color: #fca5a5; }
+        .canvas-wrapper {
+            padding: 40px 20px;
+            overflow: auto;
+        }
+        .erd-canvas {
+            position: relative;
+            width: 1600px;
+            height: 2000px;
+            margin: 0 auto;
+        }
+        .entity {
+            position: absolute;
+            background: #1e293b;
+            border: 2px solid #334155;
+            border-radius: 12px;
+            min-width: 240px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            transition: border-color 0.3s, box-shadow 0.3s;
+            z-index: 10;
+        }
+        .entity:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 30px rgba(59,130,246,0.2);
+            z-index: 20;
+        }
+        .entity-header {
+            padding: 10px 14px;
+            border-radius: 10px 10px 0 0;
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+        }
+        .entity-body {
+            padding: 0;
+        }
+        .entity-row {
+            display: flex;
+            align-items: center;
+            padding: 5px 14px;
+            font-size: 0.78rem;
+            border-bottom: 1px solid #0f172a;
+            gap: 6px;
+        }
+        .entity-row:last-child { border-bottom: none; }
+        .entity-row .col-icon {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .entity-row .col-name {
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+        .entity-row .col-type {
+            margin-left: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 0.7rem;
+            color: #64748b;
+            white-space: nowrap;
+        }
+        .entity-row .badge {
+            font-size: 0.6rem;
+            padding: 1px 6px;
+            border-radius: 6px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .badge-pk { background: #7c3aed22; color: #a78bfa; border: 1px solid #7c3aed44; }
+        .badge-fk { background: #0891b222; color: #67e8f9; border: 1px solid #0891b244; }
+        .badge-uk { background: #10b98122; color: #6ee7b7; border: 1px solid #10b98144; }
+        .badge-enum { background: #f59e0b22; color: #fbbf24; border: 1px solid #f59e0b44; }
+        .badge-nn { background: #ef444422; color: #fca5a5; border: 1px solid #ef444444; }
+        .divider {
+            height: 1px;
+            background: #334155;
+            margin: 0 14px;
+        }
+
+        /* Entity Colors */
+        .entity-users .entity-header { background: linear-gradient(135deg, #6366f1, #4f46e5); color: white; }
+        .entity-categories .entity-header { background: linear-gradient(135deg, #10b981, #059669); color: white; }
+        .entity-suppliers .entity-header { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; }
+        .entity-products .entity-header { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; }
+        .entity-stock-ins .entity-header { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; }
+        .entity-stock-outs .entity-header { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; }
+        .entity-stock-histories .entity-header { background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; }
+        .entity-carts .entity-header { background: linear-gradient(135deg, #f472b6, #ec4899); color: white; }
+        .entity-cart-items .entity-header { background: linear-gradient(135deg, #fb7185, #f43f5e); color: white; }
+        .entity-shipping-addresses .entity-header { background: linear-gradient(135deg, #14b8a6, #0d9488); color: white; }
+        .entity-orders .entity-header { background: linear-gradient(135deg, #f97316, #ea580c); color: white; }
+        .entity-order-items .entity-header { background: linear-gradient(135deg, #fb923c, #f97316); color: white; }
+        .entity-payments .entity-header { background: linear-gradient(135deg, #06b6d4, #0891b2); color: white; }
+
+        /* SVG Lines */
+        svg.lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        svg.lines line, svg.lines path {
+            stroke: #475569;
+            stroke-width: 2;
+            fill: none;
+        }
+        svg.lines .rel-label {
+            fill: #64748b;
+            font-size: 11px;
+            font-family: 'Consolas', monospace;
+        }
+
+        .info-section {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .info-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .info-card h2 {
+            color: #60a5fa;
+            font-size: 1.2rem;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #334155;
+        }
+        .info-card table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.82rem;
+        }
+        .info-card th {
+            background: #334155;
+            color: #93c5fd;
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        .info-card td {
+            padding: 7px 12px;
+            border-bottom: 1px solid #1e293b;
+            color: #cbd5e1;
+        }
+        .info-card tr:nth-child(even) td { background: rgba(15,23,42,0.5); }
+        .info-card code {
+            background: #0f172a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.8rem;
+            color: #67e8f9;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+        .stat {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+        .stat .num { font-size: 1.8rem; font-weight: 700; color: #60a5fa; }
+        .stat .lbl { color: #94a3b8; font-size: 0.75rem; margin-top: 4px; }
+        .toc {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .toc a {
+            display: block;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #60a5fa;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+        }
+        .toc a:hover { background: #3b82f622; border-color: #3b82f6; }
+        .toc a span { color: #64748b; font-size: 0.72rem; display: block; margin-top: 2px; }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.4rem; }
+            .header { padding: 32px 16px 28px; }
+            .legend {
+                gap: 10px;
+                padding: 12px 16px;
+                justify-content: flex-start;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+            .legend-item {
+                font-size: 0.7rem;
+                padding: 5px 10px;
+                gap: 5px;
+            }
+            .erd-canvas { transform: scale(0.4); transform-origin: top left; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Entity Relationship Diagram (ERD)</h1>
+    <p>Sistem Informasi Toko Motor Online Berbasis Web — Database Schema</p>
+</div>
+
+<div class="legend">
+    <div class="legend-item"><div class="legend-line legend-pk"></div> Primary Key</div>
+    <div class="legend-item"><div class="legend-line legend-fk"></div> Foreign Key</div>
+    <div class="legend-item"><div class="legend-line legend-uk"></div> Unique Key</div>
+    <div class="legend-item"><div class="legend-line legend-enum"></div> ENUM</div>
+    <div class="legend-item"><div class="legend-line legend-nn"></div> NOT NULL</div>
+</div>
+
+<div class="canvas-wrapper">
+    <div class="erd-canvas">
+        <!-- SVG for relationship lines -->
+        <svg class="lines" viewBox="0 0 1600 2000">
+            <!-- categories → products (1:N) -->
+            <line x1="395" y1="170" x2="495" y2="260" stroke="#475569" stroke-width="2"/>
+            <circle cx="395" cy="170" r="4" fill="#a78bfa"/>
+            <circle cx="495" cy="260" r="4" fill="#67e8f9"/>
+            <text x="420" y="210" class="rel-label">1 : N</text>
+
+            <!-- suppliers → stock_ins (1:N) -->
+            <line x1="165" y1="170" x2="270" y2="460" stroke="#475569" stroke-width="2"/>
+            <circle cx="165" cy="170" r="4" fill="#a78bfa"/>
+            <circle cx="270" cy="460" r="4" fill="#67e8f9"/>
+            <text x="185" y="310" class="rel-label">1 : N</text>
+
+            <!-- products → stock_ins (1:N) -->
+            <line x1="495" y1="430" x2="370" y2="460" stroke="#475569" stroke-width="2"/>
+            <circle cx="495" cy="430" r="4" fill="#a78bfa"/>
+            <circle cx="370" cy="460" r="4" fill="#67e8f9"/>
+            <text x="410" y="440" class="rel-label">1 : N</text>
+
+            <!-- products → stock_outs (1:N) -->
+            <line x1="580" y1="430" x2="570" y2="600" stroke="#475569" stroke-width="2"/>
+            <circle cx="580" cy="430" r="4" fill="#a78bfa"/>
+            <circle cx="570" cy="600" r="4" fill="#67e8f9"/>
+            <text x="560" y="510" class="rel-label">1 : N</text>
+
+            <!-- products → stock_histories (1:N) -->
+            <line x1="680" y1="430" x2="680" y2="740" stroke="#475569" stroke-width="2"/>
+            <circle cx="680" cy="430" r="4" fill="#a78bfa"/>
+            <circle cx="680" cy="740" r="4" fill="#67e8f9"/>
+            <text x="688" y="590" class="rel-label">1 : N</text>
+
+            <!-- users → carts (1:1) -->
+            <line x1="1020" y1="170" x2="900" y2="860" stroke="#475569" stroke-width="2"/>
+            <circle cx="1020" cy="170" r="4" fill="#a78bfa"/>
+            <circle cx="900" cy="860" r="4" fill="#67e8f9"/>
+            <text x="940" y="510" class="rel-label">1 : 1</text>
+
+            <!-- users → shipping_addresses (1:N) -->
+            <line x1="1080" y1="170" x2="1020" y2="1050" stroke="#475569" stroke-width="2"/>
+            <circle cx="1080" cy="170" r="4" fill="#a78bfa"/>
+            <circle cx="1020" cy="1050" r="4" fill="#67e8f9"/>
+            <text x="1040" y="600" class="rel-label">1 : N</text>
+
+            <!-- users → orders (1:N) -->
+            <line x1="1150" y1="170" x2="1150" y2="1240" stroke="#475569" stroke-width="2"/>
+            <circle cx="1150" cy="170" r="4" fill="#a78bfa"/>
+            <circle cx="1150" cy="1240" r="4" fill="#67e8f9"/>
+            <text x="1160" y="700" class="rel-label">1 : N</text>
+
+            <!-- carts → cart_items (1:N) -->
+            <line x1="810" y1="950" x2="720" y2="1050" stroke="#475569" stroke-width="2"/>
+            <circle cx="810" cy="950" r="4" fill="#a78bfa"/>
+            <circle cx="720" cy="1050" r="4" fill="#67e8f9"/>
+            <text x="745" y="995" class="rel-label">1 : N</text>
+
+            <!-- products → cart_items (1:N) -->
+            <line x1="680" y1="430" x2="720" y2="1050" stroke="#475569" stroke-width="2" stroke-dasharray="6,4"/>
+            <circle cx="720" cy="1050" r="4" fill="#67e8f9"/>
+            <text x="690" y="740" class="rel-label">1 : N</text>
+
+            <!-- products → order_items (1:N) -->
+            <line x1="680" y1="430" x2="1150" y2="1500" stroke="#475569" stroke-width="2" stroke-dasharray="6,4"/>
+            <circle cx="1150" cy="1500" r="4" fill="#67e8f9"/>
+            <text x="920" y="960" class="rel-label">1 : N</text>
+
+            <!-- shipping_addresses → orders (1:N) -->
+            <line x1="1080" y1="1180" x2="1080" y2="1240" stroke="#475569" stroke-width="2"/>
+            <circle cx="1080" cy="1180" r="4" fill="#a78bfa"/>
+            <circle cx="1080" cy="1240" r="4" fill="#67e8f9"/>
+            <text x="1010" y="1215" class="rel-label">1 : N</text>
+
+            <!-- orders → order_items (1:N) -->
+            <line x1="1150" y1="1420" x2="1150" y2="1500" stroke="#475569" stroke-width="2"/>
+            <circle cx="1150" cy="1420" r="4" fill="#a78bfa"/>
+            <circle cx="1150" cy="1500" r="4" fill="#67e8f9"/>
+            <text x="1160" y="1465" class="rel-label">1 : N</text>
+
+            <!-- orders → payments (1:1) -->
+            <line x1="1250" y1="1420" x2="1350" y2="1500" stroke="#475569" stroke-width="2"/>
+            <circle cx="1250" cy="1420" r="4" fill="#a78bfa"/>
+            <circle cx="1350" cy="1500" r="4" fill="#67e8f9"/>
+            <text x="1300" y="1455" class="rel-label">1 : 1</text>
+
+            <!-- stock_histories polymorphic indicator -->
+            <text x="740" y="810" class="rel-label" fill="#a78bfa">◆ polymorphic</text>
+            <text x="740" y="825" class="rel-label">→ StockIn / StockOut / Order</text>
+        </svg>
+
+        <!-- ==================== ENTITY TABLES ==================== -->
+
+        <!-- USERS -->
+        <div class="entity entity-users" style="left: 850px; top: 40px; min-width: 260px;">
+            <div class="entity-header">👤 users</div>
+            <div class="entity-body">
+                <div class="entity-row"><div class="col-icon" style="background:#a78bfa;"></div><span class="col-name">id</span><span class="badge badge-pk">PK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">name</span><span class="badge badge-nn">NN</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#6ee7b7;"></div><span class="col-name">email</span><span class="badge badge-uk">UK</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fbbf24;"></div><span class="col-name">role</span><span class="badge badge-enum">ENUM</span><span class="col-type">admin/customer</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">email_verified_at</span><span class="col-type">TIMESTAMP</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">password</span><span class="badge badge-nn">NN</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">remember_token</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">created_at</span><span class="col-type">TIMESTAMP</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">updated_at</span><span class="col-type">TIMESTAMP</span></div>
+            </div>
+        </div>
+
+        <!-- CATEGORIES -->
+        <div class="entity entity-categories" style="left: 250px; top: 40px;">
+            <div class="entity-header">📂 categories</div>
+            <div class="entity-body">
+                <div class="entity-row"><div class="col-icon" style="background:#a78bfa;"></div><span class="col-name">id</span><span class="badge badge-pk">PK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">name</span><span class="badge badge-nn">NN</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">description</span><span class="col-type">TEXT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fbbf24;"></div><span class="col-name">status</span><span class="badge badge-enum">ENUM</span><span class="col-type">active/inactive</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">created_at</span><span class="col-type">TIMESTAMP</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">updated_at</span><span class="col-type">TIMESTAMP</span></div>
+            </div>
+        </div>
+
+        <!-- SUPPLIERS -->
+        <div class="entity entity-suppliers" style="left: 30px; top: 40px;">
+            <div class="entity-header">🏭 suppliers</div>
+            <div class="entity-body">
+                <div class="entity-row"><div class="col-icon" style="background:#a78bfa;"></div><span class="col-name">id</span><span class="badge badge-pk">PK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">name</span><span class="badge badge-nn">NN</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">phone</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">address</span><span class="col-type">TEXT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">created_at</span><span class="col-type">TIMESTAMP</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">updated_at</span><span class="col-type">TIMESTAMP</span></div>
+            </div>
+        </div>
+
+        <!-- PRODUCTS -->
+        <div class="entity entity-products" style="left: 350px; top: 230px; min-width: 280px;">
+            <div class="entity-header">📦 products</div>
+            <div class="entity-body">
+                <div class="entity-row"><div class="col-icon" style="background:#a78bfa;"></div><span class="col-name">id</span><span class="badge badge-pk">PK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#67e8f9;"></div><span class="col-name">category_id</span><span class="badge badge-fk">FK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">name</span><span class="badge badge-nn">NN</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">price</span><span class="badge badge-nn">NN</span><span class="col-type">DECIMAL(10,2)</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">stock</span><span class="badge badge-nn">NN</span><span class="col-type">INTEGER</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">description</span><span class="col-type">TEXT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">image</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">created_at</span><span class="col-type">TIMESTAMP</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">updated_at</span><span class="col-type">TIMESTAMP</span></div>
+            </div>
+        </div>
+
+        <!-- STOCK_INS -->
+        <div class="entity entity-stock-ins" style="left: 30px; top: 440px; min-width: 260px;">
+            <div class="entity-header">📥 stock_ins</div>
+            <div class="entity-body">
+                <div class="entity-row"><div class="col-icon" style="background:#a78bfa;"></div><span class="col-name">id</span><span class="badge badge-pk">PK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#67e8f9;"></div><span class="col-name">product_id</span><span class="badge badge-fk">FK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#67e8f9;"></div><span class="col-name">supplier_id</span><span class="badge badge-fk">FK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">tanggal_masuk</span><span class="badge badge-nn">NN</span><span class="col-type">DATE</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">qty</span><span class="badge badge-nn">NN</span><span class="col-type">INTEGER</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">keterangan</span><span class="col-type">TEXT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">created_at</span><span class="col-type">TIMESTAMP</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">updated_at</span><span class="col-type">TIMESTAMP</span></div>
+            </div>
+        </div>
+
+        <!-- STOCK_OUTS -->
+        <div class="entity entity-stock-outs" style="left: 400px; top: 580px; min-width: 280px;">
+            <div class="entity-header">📤 stock_outs</div>
+            <div class="entity-body">
+                <div class="entity-row"><div class="col-icon" style="background:#a78bfa;"></div><span class="col-name">id</span><span class="badge badge-pk">PK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#67e8f9;"></div><span class="col-name">product_id</span><span class="badge badge-fk">FK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">tanggal_keluar</span><span class="badge badge-nn">NN</span><span class="col-type">DATE</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">qty</span><span class="badge badge-nn">NN</span><span class="col-type">INTEGER</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fbbf24;"></div><span class="col-name">alasan</span><span class="badge badge-enum">ENUM</span><span class="col-type">rusak/hilang/...</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">keterangan</span><span class="col-type">TEXT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">created_at</span><span class="col-type">TIMESTAMP</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">updated_at</span><span class="col-type">TIMESTAMP</span></div>
+            </div>
+        </div>
+
+        <!-- STOCK_HISTORIES -->
+        <div class="entity entity-stock-histories" style="left: 560px; top: 730px; min-width: 280px;">
+            <div class="entity-header">📜 stock_histories</div>
+            <div class="entity-body">
+                <div class="entity-row"><div class="col-icon" style="background:#a78bfa;"></div><span class="col-name">id</span><span class="badge badge-pk">PK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#67e8f9;"></div><span class="col-name">product_id</span><span class="badge badge-fk">FK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fbbf24;"></div><span class="col-name">type</span><span class="badge badge-enum">ENUM</span><span class="col-type">in/out/sale</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">qty</span><span class="badge badge-nn">NN</span><span class="col-type">INTEGER</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">stock_before</span><span class="badge badge-nn">NN</span><span class="col-type">INTEGER</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">stock_after</span><span class="badge badge-nn">NN</span><span class="col-type">INTEGER</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">reference_id</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">reference_type</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">created_at</span><span class="col-type">TIMESTAMP</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">updated_at</span><span class="col-type">TIMESTAMP</span></div>
+            </div>
+        </div>
+
+        <!-- CARTS -->
+        <div class="entity entity-carts" style="left: 790px; top: 840px;">
+            <div class="entity-header">🛒 carts</div>
+            <div class="entity-body">
+                <div class="entity-row"><div class="col-icon" style="background:#a78bfa;"></div><span class="col-name">id</span><span class="badge badge-pk">PK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#67e8f9;"></div><span class="col-name">user_id</span><span class="badge badge-fk">FK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">created_at</span><span class="col-type">TIMESTAMP</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">updated_at</span><span class="col-type">TIMESTAMP</span></div>
+            </div>
+        </div>
+
+        <!-- CART_ITEMS -->
+        <div class="entity entity-cart-items" style="left: 560px; top: 1030px; min-width: 260px;">
+            <div class="entity-header">🧾 cart_items</div>
+            <div class="entity-body">
+                <div class="entity-row"><div class="col-icon" style="background:#a78bfa;"></div><span class="col-name">id</span><span class="badge badge-pk">PK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#67e8f9;"></div><span class="col-name">cart_id</span><span class="badge badge-fk">FK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#67e8f9;"></div><span class="col-name">product_id</span><span class="badge badge-fk">FK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">qty</span><span class="badge badge-nn">NN</span><span class="col-type">INTEGER</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">price</span><span class="badge badge-nn">NN</span><span class="col-type">DECIMAL(10,2)</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">created_at</span><span class="col-type">TIMESTAMP</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">updated_at</span><span class="col-type">TIMESTAMP</span></div>
+            </div>
+        </div>
+
+        <!-- SHIPPING_ADDRESSES -->
+        <div class="entity entity-shipping-addresses" style="left: 880px; top: 1030px; min-width: 270px;">
+            <div class="entity-header">📍 shipping_addresses</div>
+            <div class="entity-body">
+                <div class="entity-row"><div class="col-icon" style="background:#a78bfa;"></div><span class="col-name">id</span><span class="badge badge-pk">PK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#67e8f9;"></div><span class="col-name">user_id</span><span class="badge badge-fk">FK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">recipient_name</span><span class="badge badge-nn">NN</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">phone</span><span class="badge badge-nn">NN</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">address</span><span class="badge badge-nn">NN</span><span class="col-type">TEXT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">city</span><span class="badge badge-nn">NN</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">province</span><span class="badge badge-nn">NN</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">postal_code</span><span class="badge badge-nn">NN</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">created_at</span><span class="col-type">TIMESTAMP</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">updated_at</span><span class="col-type">TIMESTAMP</span></div>
+            </div>
+        </div>
+
+        <!-- ORDERS -->
+        <div class="entity entity-orders" style="left: 1030px; top: 1250px; min-width: 280px;">
+            <div class="entity-header">📋 orders</div>
+            <div class="entity-body">
+                <div class="entity-row"><div class="col-icon" style="background:#a78bfa;"></div><span class="col-name">id</span><span class="badge badge-pk">PK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#67e8f9;"></div><span class="col-name">user_id</span><span class="badge badge-fk">FK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#67e8f9;"></div><span class="col-name">shipping_address_id</span><span class="badge badge-fk">FK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#6ee7b7;"></div><span class="col-name">order_number</span><span class="badge badge-uk">UK</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">total</span><span class="badge badge-nn">NN</span><span class="col-type">DECIMAL(10,2)</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fbbf24;"></div><span class="col-name">status</span><span class="badge badge-enum">ENUM</span><span class="col-type">pending/.../cancelled</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fbbf24;"></div><span class="col-name">payment_status</span><span class="badge badge-enum">ENUM</span><span class="col-type">unpaid/.../rejected</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">created_at</span><span class="col-type">TIMESTAMP</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">updated_at</span><span class="col-type">TIMESTAMP</span></div>
+            </div>
+        </div>
+
+        <!-- ORDER_ITEMS -->
+        <div class="entity entity-order-items" style="left: 1030px; top: 1490px; min-width: 260px;">
+            <div class="entity-header">🧾 order_items</div>
+            <div class="entity-body">
+                <div class="entity-row"><div class="col-icon" style="background:#a78bfa;"></div><span class="col-name">id</span><span class="badge badge-pk">PK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#67e8f9;"></div><span class="col-name">order_id</span><span class="badge badge-fk">FK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#67e8f9;"></div><span class="col-name">product_id</span><span class="badge badge-fk">FK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">qty</span><span class="badge badge-nn">NN</span><span class="col-type">INTEGER</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">price</span><span class="badge badge-nn">NN</span><span class="col-type">DECIMAL(10,2)</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">subtotal</span><span class="badge badge-nn">NN</span><span class="col-type">DECIMAL(10,2)</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">created_at</span><span class="col-type">TIMESTAMP</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">updated_at</span><span class="col-type">TIMESTAMP</span></div>
+            </div>
+        </div>
+
+        <!-- PAYMENTS -->
+        <div class="entity entity-payments" style="left: 1320px; top: 1490px; min-width: 260px;">
+            <div class="entity-header">💳 payments</div>
+            <div class="entity-body">
+                <div class="entity-row"><div class="col-icon" style="background:#a78bfa;"></div><span class="col-name">id</span><span class="badge badge-pk">PK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#67e8f9;"></div><span class="col-name">order_id</span><span class="badge badge-fk">FK</span><span class="col-type">BIGINT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">midtrans_transaction_id</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">snap_token</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">transaction_id</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">payment_type</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">transaction_status</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">fraud_status</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">paid_at</span><span class="col-type">TIMESTAMP</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">payment_method</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">proof</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">uploaded_at</span><span class="col-type">TIMESTAMP</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#fca5a5;"></div><span class="col-name">status</span><span class="badge badge-nn">NN</span><span class="col-type">VARCHAR</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">admin_notes</span><span class="col-type">TEXT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">verified_at</span><span class="col-type">TIMESTAMP</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">rejected_at</span><span class="col-type">TIMESTAMP</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">rejected_reason</span><span class="col-type">TEXT</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">created_at</span><span class="col-type">TIMESTAMP</span></div>
+                <div class="entity-row"><div class="col-icon" style="background:#64748b;"></div><span class="col-name">updated_at</span><span class="col-type">TIMESTAMP</span></div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- RELATIONSHIP TABLE -->
+<div class="info-section">
+    <div class="info-card">
+        <h2>Daftar Relasi</h2>
+        <table>
+            <thead><tr><th>Parent</th><th>Child</th><th>Tipe</th><th>FK</th><th>On Delete</th></tr></thead>
+            <tbody>
+                <tr><td>categories</td><td>products</td><td>1 : N</td><td><code>products.category_id</code></td><td>CASCADE</td></tr>
+                <tr><td>suppliers</td><td>stock_ins</td><td>1 : N</td><td><code>stock_ins.supplier_id</code></td><td>SET NULL</td></tr>
+                <tr><td>products</td><td>stock_ins</td><td>1 : N</td><td><code>stock_ins.product_id</code></td><td>CASCADE</td></tr>
+                <tr><td>products</td><td>stock_outs</td><td>1 : N</td><td><code>stock_outs.product_id</code></td><td>CASCADE</td></tr>
+                <tr><td>products</td><td>stock_histories</td><td>1 : N</td><td><code>stock_histories.product_id</code></td><td>CASCADE</td></tr>
+                <tr><td>products</td><td>cart_items</td><td>1 : N</td><td><code>cart_items.product_id</code></td><td>CASCADE</td></tr>
+                <tr><td>products</td><td>order_items</td><td>1 : N</td><td><code>order_items.product_id</code></td><td>CASCADE</td></tr>
+                <tr><td>users</td><td>carts</td><td>1 : 1</td><td><code>carts.user_id</code></td><td>CASCADE</td></tr>
+                <tr><td>carts</td><td>cart_items</td><td>1 : N</td><td><code>cart_items.cart_id</code></td><td>CASCADE</td></tr>
+                <tr><td>users</td><td>shipping_addresses</td><td>1 : N</td><td><code>shipping_addresses.user_id</code></td><td>CASCADE</td></tr>
+                <tr><td>users</td><td>orders</td><td>1 : N</td><td><code>orders.user_id</code></td><td>CASCADE</td></tr>
+                <tr><td>shipping_addresses</td><td>orders</td><td>1 : N</td><td><code>orders.shipping_address_id</code></td><td>SET NULL</td></tr>
+                <tr><td>orders</td><td>order_items</td><td>1 : N</td><td><code>order_items.order_id</code></td><td>CASCADE</td></tr>
+                <tr><td>orders</td><td>payments</td><td>1 : 1</td><td><code>payments.order_id</code></td><td>CASCADE</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="info-card">
+        <h2>Polymorphic Relation</h2>
+        <p style="color: #94a3b8; margin-bottom: 12px;">Tabel <code>stock_histories</code> menggunakan <code>reference_type</code> dan <code>reference_id</code> untuk menunjuk ke berbagai sumber perubahan stok:</p>
+        <table>
+            <thead><tr><th>type</th><th>reference_type</th><th>Arti</th><th>Dampak Stok</th></tr></thead>
+            <tbody>
+                <tr><td><code>in</code></td><td><code>App\Models\StockIn</code></td><td>Stok masuk dari pemasok</td><td>Tambah</td></tr>
+                <tr><td><code>out</code></td><td><code>App\Models\StockOut</code></td><td>Stok keluar (rusak/hilang)</td><td>Kurang</td></tr>
+                <tr><td><code>sale</code></td><td><code>App\Models\Order</code></td><td>Stok berkurang karena penjualan</td><td>Kurang</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="info-card">
+        <h2>Statistics</h2>
+        <div class="stats-grid">
+            <div class="stat"><div class="num">13</div><div class="lbl">Tabel Bisnis</div></div>
+            <div class="stat"><div class="num">14</div><div class="lbl">Foreign Keys</div></div>
+            <div class="stat"><div class="num">6</div><div class="lbl">ENUM Columns</div></div>
+            <div class="stat"><div class="num">1</div><div class="lbl">Polymorphic</div></div>
+            <div class="stat"><div class="num">13</div><div class="lbl">Models</div></div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

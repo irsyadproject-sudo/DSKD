@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dokumentasi Database - Toko Motor Online</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.7;
+        }
+        .header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #0f172a 100%);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 3px solid #3b82f6;
+        }
+        .header h1 { font-size: 2.2rem; color: #60a5fa; margin-bottom: 8px; }
+        .header p { color: #94a3b8; font-size: 1.1rem; }
+        .nav {
+            background: #1e293b;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #334155;
+        }
+        .nav a {
+            color: #60a5fa;
+            text-decoration: none;
+            padding: 6px 16px;
+            border-radius: 8px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            transition: all 0.3s;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .nav a:hover { background: #3b82f6; color: white; border-color: #3b82f6; }
+        .container { max-width: 1300px; margin: 0 auto; padding: 30px 20px; }
+        .section {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .section h2 {
+            color: #60a5fa;
+            font-size: 1.5rem;
+            margin-bottom: 6px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #334155;
+        }
+        .section h3 {
+            color: #93c5fd;
+            font-size: 1.15rem;
+            margin: 24px 0 10px;
+            padding-left: 12px;
+            border-left: 3px solid #3b82f6;
+        }
+        .section h4 { color: #a5b4fc; font-size: 1rem; margin: 16px 0 8px; }
+        .section p, .section li { color: #cbd5e1; margin-bottom: 8px; }
+        .section ul { padding-left: 24px; margin-bottom: 12px; }
+        .section li { margin-bottom: 4px; }
+        .table-container { overflow-x: auto; margin: 14px 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+        }
+        th {
+            background: #334155;
+            color: #93c5fd;
+            padding: 11px 16px;
+            text-align: left;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        td {
+            padding: 9px 16px;
+            border-bottom: 1px solid #1e293b;
+            color: #cbd5e1;
+            vertical-align: top;
+        }
+        tr:nth-child(even) td { background: rgba(15,23,42,0.5); }
+        tr:hover td { background: rgba(59, 130, 246, 0.08); }
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .pk { background: #7c3aed22; color: #a78bfa; border: 1px solid #7c3aed44; }
+        .fk { background: #0891b222; color: #67e8f9; border: 1px solid #0891b244; }
+        .uk { background: #10b98122; color: #6ee7b7; border: 1px solid #10b98144; }
+        .enum { background: #f59e0b22; color: #fbbf24; border: 1px solid #f59e0b44; }
+        .nn { background: #ef444422; color: #fca5a5; border: 1px solid #ef444444; }
+        .col-name { color: #e2e8f0; font-weight: 600; font-family: 'Consolas', monospace; }
+        .col-type { color: #94a3b8; font-family: 'Consolas', monospace; font-size: 0.82rem; }
+        .card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 16px 0;
+        }
+        .card h4 { color: #60a5fa; margin-bottom: 8px; }
+        .rel-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 0;
+            border-bottom: 1px solid #1e293b;
+            flex-wrap: wrap;
+        }
+        .rel-row:last-child { border-bottom: none; }
+        .rel-entity {
+            background: #334155;
+            color: #e2e8f0;
+            padding: 4px 14px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .rel-arrow { color: #60a5fa; font-size: 1.2rem; font-weight: 700; }
+        .rel-label { color: #94a3b8; font-size: 0.8rem; font-style: italic; }
+        .info-box {
+            background: #3b82f611;
+            border: 1px solid #3b82f633;
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin: 16px 0;
+            color: #93c5fd;
+            font-size: 0.9rem;
+        }
+        .info-box strong { color: #60a5fa; }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 14px;
+            margin: 20px 0;
+        }
+        .stat {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 18px;
+            text-align: center;
+        }
+        .stat .num { font-size: 2rem; font-weight: 700; color: #60a5fa; }
+        .stat .lbl { color: #94a3b8; font-size: 0.8rem; margin-top: 4px; }
+        .code {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 16px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.82rem;
+            color: #e2e8f0;
+            overflow-x: auto;
+            white-space: pre;
+            line-height: 1.8;
+        }
+        .code .kw { color: #c084fc; }
+        .code .tp { color: #67e8f9; }
+        .code .cm { color: #64748b; }
+        .code .fn { color: #fbbf24; }
+        .code .st { color: #86efac; }
+        .toc {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .toc a {
+            display: block;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 12px 16px;
+            color: #60a5fa;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 0.9rem;
+        }
+        .toc a:hover { background: #3b82f622; border-color: #3b82f6; }
+        .toc a span { color: #64748b; font-size: 0.75rem; display: block; margin-top: 2px; }
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #334155, transparent);
+            margin: 24px 0;
+        }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.5rem; }
+            .section { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Dokumentasi Database</h1>
+    <p>Sistem Informasi Toko Motor Online Berbasis Web (Laravel 13)</p>
+</div>
+
+<div class="nav">
+    <a href="#overview">Overview</a>
+    <a href="#tech">Teknologi</a>
+    <a href="#erd">Relasi</a>
+    <a href="#users">users</a>
+    <a href="#categories">categories</a>
+    <a href="#suppliers">suppliers</a>
+    <a href="#products">products</a>
+    <a href="#stock-ins">stock_ins</a>
+    <a href="#stock-outs">stock_outs</a>
+    <a href="#stock-hist">stock_histories</a>
+    <a href="#carts">carts</a>
+    <a href="#cart-items">cart_items</a>
+    <a href="#shipping">shipping_addresses</a>
+    <a href="#orders">orders</a>
+    <a href="#order-items">order_items</a>
+    <a href="#payments">payments</a>
+    <a href="#migration">Migration</a>
+    <a href="#model">Model</a>
+</div>
+
+<div class="container">
+
+    <!-- ======================== OVERVIEW ======================== -->
+    <div class="section" id="overview">
+        <h2>1. Overview Database</h2>
+        <p>Sistem ini menggunakan basis data relasional (<strong>SQLite</strong> untuk pengembangan, <strong>MySQL</strong> untuk produksi) dengan total <strong>13 tabel bisnis utama</strong> ditambah 5 tabel sistem bawaan Laravel.</p>
+
+        <div class="stats-grid">
+            <div class="stat"><div class="num">13</div><div class="lbl">Tabel Bisnis</div></div>
+            <div class="stat"><div class="num">14</div><div class="lbl">Migration</div></div>
+            <div class="stat"><div class="num">13</div><div class="lbl">Model Eloquent</div></div>
+            <div class="stat"><div class="num">16</div><div class="lbl">FK Relations</div></div>
+            <div class="stat"><div class="num">6</div><div class="lbl">ENUM Columns</div></div>
+            <div class="stat"><div class="num">1</div><div class="lbl">Polymorphic</div></div>
+        </div>
+
+        <div class="info-box">
+            <strong>Catatan:</strong> Tabel sistem Laravel (<code>users</code> dasar, <code>password_reset_tokens</code>, <code>sessions</code>, <code>cache</code>, <code>cache_locks</code>, <code>jobs</code>, <code>job_batches</code>, <code>failed_jobs</code>) tidak dijelaskan secara detail karena merupakan bagian framework. Dokumentasi ini fokus pada 13 tabel bisnis aplikasi.
+        </div>
+
+        <h3>Daftar Tabel Bisnis</h3>
+        <div class="toc">
+            <a href="#users">users <span>Pengguna (admin & pelanggan)</span></a>
+            <a href="#categories">categories <span>Kategori produk</span></a>
+            <a href="#suppliers">suppliers <span>Pemasok</span></a>
+            <a href="#products">products <span>Produk/motor</span></a>
+            <a href="#stock-ins">stock_ins <span>Riwayat stok masuk</span></a>
+            <a href="#stock-outs">stock_outs <span>Riwayat stok keluar</span></a>
+            <a href="#stock-hist">stock_histories <span>Mutasi stok</span></a>
+            <a href="#carts">carts <span>Keranjang belanja</span></a>
+            <a href="#cart-items">cart_items <span>Item keranjang</span></a>
+            <a href="#shipping">shipping_addresses <span>Alamat pengiriman</span></a>
+            <a href="#orders">orders <span>Pesanan</span></a>
+            <a href="#order-items">order_items <span>Item pesanan</span></a>
+            <a href="#payments">payments <span>Pembayaran</span></a>
+        </div>
+    </div>
+
+    <!-- ======================== TEKNOLOGI ======================== -->
+    <div class="section" id="tech">
+        <h2>2. Teknologi & Konfigurasi Database</h2>
+
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Aspek</th><th>Detail</th></tr></thead>
+            <tbody>
+                <tr><td><strong>Database Engine</strong></td><td>SQLite (dev) / MySQL 8 (produksi)</td></tr>
+                <tr><td><strong>ORM</strong></td><td>Eloquent ORM (Laravel 13)</td></tr>
+                <tr><td><strong>Migrations</strong></td><td>14 file migration di <code>database/migrations/</code></td></tr>
+                <tr><td><strong>Seeder</strong></td><td>Data produk awal untuk pengujian</td></tr>
+                <tr><td><strong>Koneksi</strong></td><td>Dikonfigurasi di <code>.env</code> dan <code>config/database.php</code></td></tr>
+                <tr><td><strong>Transactions</strong></td><td>Digunakan pada operasi kritis: checkout, stok masuk/keluar, batal pesanan</td></tr>
+                <tr><td><strong>Soft Deletes</strong></td><td>Tidak digunakan — data dihapus secara permanen (hard delete)</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Konfigurasi di .env</h3>
+        <div class="code"><span class="cm"># Database Configuration</span>
+<span class="kw">DB_CONNECTION</span>=<span class="st">sqlite</span>
+<span class="cm"># DB_HOST=127.0.0.1</span>
+<span class="cm"># DB_PORT=3306</span>
+<span class="cm"># DB_DATABASE=toko_online</span>
+<span class="cm"># DB_USERNAME=root</span>
+<span class="cm"># DB_PASSWORD=</span></div>
+    </div>
+
+    <!-- ======================== RELASI ======================== -->
+    <div class="section" id="erd">
+        <h2>3. Relasi Antar Tabel</h2>
+        <p>Berikut diagram relasi menggunakan notasi <strong>Crow's Foot</strong>. Setiap relasi ditandai dengan tipe (1:1, 1:N, N:1) dan delete rule (CASCADE / SET NULL).</p>
+
+        <div class="card">
+            <h3>Diagram Relasi</h3>
+            <div class="code">
+<span class="cm">                          ┌──────────────┐</span>
+<span class="cm">                          │  categories  │</span>
+<span class="cm">                          │──────────────│</span>
+<span class="cm">                          │ id (PK)      │</span>
+<span class="cm">                          │ name         │</span>
+<span class="cm">                          │ description  │</span>
+<span class="cm">                          │ status       │</span>
+<span class="cm">                          └──────┬───────┘</span>
+<span class="cm">                                 │ 1</span>
+<span class="cm">                                 │</span>
+<span class="cm">                                 │ *</span>
+<span class="cm">┌──────────────┐        ┌────────┴───────────┐        ┌──────────────┐</span>
+<span class="cm">│  suppliers   │        │     products       │        │  cart_items  │</span>
+<span class="cm">│──────────────│   1:N  │────────────────────│  N:1   │──────────────│</span>
+<span class="kw">│ id (PK)      │◄───────│ id (PK)            │───────►│ id (PK)      │</span>
+<span class="kw">│ name         │        │ category_id (FK)   │        │ cart_id (FK) │</span>
+<span class="cm">│ phone        │        │ name               │        │ product_id(FK│</span>
+<span class="cm">│ address      │        │ price              │        │ qty          │</span>
+<span class="cm">└──────┬───────┘        │ stock              │        │ price        │</span>
+<span class="cm">       │ 1              │ description        │        └──────┬───────┘</span>
+<span class="cm">       │                │ image              │               │ *</span>
+<span class="cm">       │ *              └──┬─────┬─────┬─────┘               │</span>
+<span class="cm">┌──────┴───────┐           │     │     │                     │ 1</span>
+<span class="cm">│  stock_ins   │           │     │     │            ┌────────┴───────┐</span>
+<span class="cm">│──────────────│           │     │     │            │     carts      │</span>
+<span class="kw">│ id (PK)      │           │     │     │            │────────────────│</span>
+<span class="kw">│ product_id(FK│           │     │     │            │ id (PK)        │</span>
+<span class="kw">│ supplier_idFK│           │     │     │            │ user_id (FK)   │</span>
+<span class="cm">│ tanggal_*****│           │     │     │            └────────┬───────┘</span>
+<span class="cm">│ qty          │           │     │     │                     │ *</span>
+<span class="cm">└──────────────┘           │     │     │                     │</span>
+<span class="cm">                           │     │     │                     │ 1</span>
+<span class="cm">┌──────────────┐           │     │     │            ┌────────┴───────┐</span>
+<span class="cm">│ stock_outs   │           │     │     │            │     users      │</span>
+<span class="cm">│──────────────│           │     │     │            │────────────────│</span>
+<span class="kw">│ id (PK)      │           │     │     │            │ id (PK)        │</span>
+<span class="kw">│ product_id(FK│◄──────────┘     │     │            │ name           │</span>
+<span class="cm">│ tanggal_*****│                 │     │            │ email (UK)     │</span>
+<span class="cm">│ qty          │                 │     │            │ role           │</span>
+<span class="cm">│ alasan       │                 │     │            │ password       │</span>
+<span class="cm">└──────────────┘                 │     │            └──┬─────┬───────┘</span>
+<span class="cm">                                 │     │               │     │</span>
+<span class="cm">┌─────────────────┐              │     │               │     │</span>
+<span class="cm">│ stock_histories │              │     │               │     │</span>
+<span class="cm">│─────────────────│              │     │               │     │</span>
+<span class="kw">│ id (PK)         │◄─────────────┘     │               │     │</span>
+<span class="kw">│ product_id (FK) │                    │               │     │</span>
+<span class="cm">│ type            │                    │               │     │</span>
+<span class="cm">│ qty             │                    │               │     │</span>
+<span class="cm">│ stock_before    │                    │               │     │</span>
+<span class="cm">│ stock_after     │                    │               │     │</span>
+<span class="cm">│ reference_id    │ ◄─── Polymorphic ──┤               │     │</span>
+<span class="cm">│ reference_type  │ ◄─── (StockIn /    │               │     │</span>
+<span class="cm">│                 │      StockOut /    │               │     │</span>
+<span class="cm">│                 │      Order)        │               │     │</span>
+<span class="cm">└─────────────────┘                    │               │     │</span>
+<span class="cm">                                       │               │     │</span>
+<span class="cm">┌──────────────────┐                   │               │     │</span>
+<span class="cm">│   order_items    │                   │               │     │</span>
+<span class="cm">│──────────────────│                   │               │     │</span>
+<span class="kw">│ id (PK)          │                   │               │     │</span>
+<span class="kw">│ order_id (FK)    │                   │               │     │</span>
+<span class="kw">│ product_id (FK)  │◄──────────────────┘               │     │</span>
+<span class="cm">│ qty              │                                   │     │</span>
+<span class="cm">│ price            │                                   │     │</span>
+<span class="cm">│ subtotal         │                                   │     │</span>
+<span class="cm">└────────┬─────────┘                                   │     │</span>
+<span class="cm">         │ *                                           │     │</span>
+<span class="cm">         │ 1                                           │     │</span>
+<span class="cm">┌────────┴──────────────────┐                           │     │</span>
+<span class="cm">│         orders            │                           │     │</span>
+<span class="cm">│───────────────────────────│                           │     │</span>
+<span class="kw">│ id (PK)                   │◄──────────────────────────┘     │</span>
+<span class="kw">│ user_id (FK)              │                                 │</span>
+<span class="kw">│ shipping_address_id (FK)  │ ◄───┐                          │</span>
+<span class="cm">│ order_number (UK)         │     │                          │</span>
+<span class="cm">│ total                     │     │                          │</span>
+<span class="cm">│ status                    │     │                          │</span>
+<span class="cm">│ payment_status            │     │                          │</span>
+<span class="cm">└────────┬──────────────────┘     │                          │</span>
+<span class="cm">         │ 1                      │                          │</span>
+<span class="cm">         │                        │                          │</span>
+<span class="cm">         │ *                      │                          │</span>
+<span class="cm">┌────────┴──────────┐    ┌────────┴──────────────────────┐   │</span>
+<span class="cm">│     payments      │    │    shipping_addresses          │   │</span>
+<span class="cm">│───────────────────│    │───────────────────────────────│   │</span>
+<span class="kw">│ id (PK)           │    │ id (PK)                       │   │</span>
+<span class="kw">│ order_id (FK)     │    │ user_id (FK) ─────────────────┘   │</span>
+<span class="cm">│ payment_method    │    │ recipient_name                    │</span>
+<span class="cm">│ proof             │    │ phone                             │</span>
+<span class="cm">│ status            │    │ address                           │</span>
+<span class="cm">│ snap_token        │    │ city                              │</span>
+<span class="cm">│ transaction_id    │    │ province                          │</span>
+<span class="cm">│ ...               │    │ postal_code                       │</span>
+<span class="cm">└───────────────────┘    └───────────────────────────────┘</span>
+            </div>
+        </div>
+
+        <h3>Daftar Relasi</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Parent Tabel</th><th>Anak Tabel</th><th>Tipe</th><th>Foreign Key</th><th>On Delete</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td>categories</td><td>products</td><td>1 : N</td><td><code>products.category_id</code></td><td>CASCADE</td><td>Satu kategori punya banyak produk</td></tr>
+                <tr><td>suppliers</td><td>stock_ins</td><td>1 : N</td><td><code>stock_ins.supplier_id</code></td><td>SET NULL</td><td>Satu pemasok bisa kirim stok berkali-kali</td></tr>
+                <tr><td>products</td><td>stock_ins</td><td>1 : N</td><td><code>stock_ins.product_id</code></td><td>CASCADE</td><td>Stok masuk per produk</td></tr>
+                <tr><td>products</td><td>stock_outs</td><td>1 : N</td><td><code>stock_outs.product_id</code></td><td>CASCADE</td><td>Stok keluar per produk</td></tr>
+                <tr><td>products</td><td>stock_histories</td><td>1 : N</td><td><code>stock_histories.product_id</code></td><td>CASCADE</td><td>Riwayat mutasi stok</td></tr>
+                <tr><td>products</td><td>cart_items</td><td>1 : N</td><td><code>cart_items.product_id</code></td><td>CASCADE</td><td>Produk di keranjang</td></tr>
+                <tr><td>products</td><td>order_items</td><td>1 : N</td><td><code>order_items.product_id</code></td><td>CASCADE</td><td>Produk di pesanan</td></tr>
+                <tr><td>users</td><td>carts</td><td>1 : 1</td><td><code>carts.user_id</code></td><td>CASCADE</td><td>Satu user punya satu keranjang</td></tr>
+                <tr><td>carts</td><td>cart_items</td><td>1 : N</td><td><code>cart_items.cart_id</code></td><td>CASCADE</td><td>Item dalam keranjang</td></tr>
+                <tr><td>users</td><td>shipping_addresses</td><td>1 : N</td><td><code>shipping_addresses.user_id</code></td><td>CASCADE</td><td>Alamat pengiriman milik user</td></tr>
+                <tr><td>users</td><td>orders</td><td>1 : N</td><td><code>orders.user_id</code></td><td>CASCADE</td><td>Pesanan dari user</td></tr>
+                <tr><td>shipping_addresses</td><td>orders</td><td>1 : N</td><td><code>orders.shipping_address_id</code></td><td>SET NULL</td><td>Alamat yang dipakai saat checkout</td></tr>
+                <tr><td>orders</td><td>order_items</td><td>1 : N</td><td><code>order_items.order_id</code></td><td>CASCADE</td><td>Item dalam pesanan</td></tr>
+                <tr><td>orders</td><td>payments</td><td>1 : 1</td><td><code>payments.order_id</code></td><td>CASCADE</td><td>Satu pesanan punya satu catatan pembayaran</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <div class="info-box">
+            <strong>Polymorphic Relation:</strong> Tabel <code>stock_histories</code> menggunakan kolom <code>reference_type</code> dan <code>reference_id</code> untuk menunjuk ke tabel <code>StockIn</code>, <code>StockOut</code>, atau <code>Order</code> secara fleksibel. Ini memungkinkan satu tabel riwayat mencatat semua jenis perubahan stok.
+        </div>
+    </div>
+
+    <!-- ======================== USERS ======================== -->
+    <div class="section" id="users">
+        <h2>4. Tabel <code>users</code></h2>
+        <p>Menyimpan data seluruh pengguna sistem. Tabel ini awalnya dibuat oleh Laravel Breeze, kemudian ditambah kolom <code>role</code> melalui migration terpisah untuk membedakan <strong>Admin</strong> dan <strong>Pelanggan</strong>.</p>
+
+        <h3>Struktur Kolom</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Constraint</th><th>Default</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge pk">PRIMARY KEY</span> <span class="badge pk">AUTO_INCREMENT</span></td><td>—</td><td>Identifier unik pengguna</td></tr>
+                <tr><td class="col-name">name</td><td class="col-type">VARCHAR(255)</td><td>NOT NULL</td><td>—</td><td>Nama lengkap pengguna</td></tr>
+                <tr><td class="col-name">email</td><td class="col-type">VARCHAR(255)</td><td><span class="badge uk">UNIQUE</span> NOT NULL</td><td>—</td><td>Email untuk login & komunikasi</td></tr>
+                <tr><td class="col-name">role</td><td class="col-type">ENUM('admin','customer')</td><td>NOT NULL</td><td><code>'customer'</code></td><td>Peran pengguna dalam sistem</td></tr>
+                <tr><td class="col-name">email_verified_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu email diverifikasi</td></tr>
+                <tr><td class="col-name">password</td><td class="col-type">VARCHAR(255)</td><td>NOT NULL</td><td>—</td><td>Password di-hash dengan bcrypt</td></tr>
+                <tr><td class="col-name">remember_token</td><td class="col-type">VARCHAR(100)</td><td>NULLABLE</td><td><code>NULL</code></td><td>Token "Ingat Saya"</td></tr>
+                <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu akun dibuat</td></tr>
+                <tr><td class="col-name">updated_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu terakhir pembaruan</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Migration</h3>
+        <div class="code"><span class="cm">// 0001_01_01_000000_create_users_table.php</span>
+<span class="tp">$table</span>-><span class="fn">id</span>();
+<span class="tp">$table</span>-><span class="fn">string</span>(<span class="st">'name'</span>);
+<span class="tp">$table</span>-><span class="fn">string</span>(<span class="st">'email'</span>)-><span class="fn">unique</span>();
+<span class="tp">$table</span>-><span class="fn">timestamp</span>(<span class="st">'email_verified_at'</span>)-><span class="fn">nullable</span>();
+<span class="tp">$table</span>-><span class="fn">string</span>(<span class="st">'password'</span>);
+<span class="tp">$table</span>-><span class="fn">rememberToken</span>();
+<span class="tp">$table</span>-><span class="fn">timestamps</span>();
+
+<span class="cm">// 2024_01_01_000001_add_role_to_users_table.php</span>
+<span class="tp">$table</span>-><span class="fn">enum</span>(<span class="st">'role'</span>, [<span class="st">'admin'</span>, <span class="st">'customer'</span>])-><span class="fn">default</span>(<span class="st">'customer'</span>)-><span class="fn">after</span>(<span class="st">'email'</span>);</div>
+
+        <h3>Relasi Eloquent</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Method</th><th>Tipe</th><th>Model Tujuan</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">cart()</td><td>hasOne</td><td>Cart</td><td>Satu pengguna punya satu keranjang</td></tr>
+                <tr><td class="col-name">orders()</td><td>hasMany</td><td>Order</td><td>Satu pengguna bisa punya banyak pesanan</td></tr>
+                <tr><td class="col-name">shippingAddresses()</td><td>hasMany</td><td>ShippingAddress</td><td>Satu pengguna punya banyak alamat</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Method Penting</h3>
+        <div class="code"><span class="kw">public function</span> <span class="fn">isAdmin</span>(): <span class="tp">bool</span> {
+    <span class="kw">return</span> <span class="tp">$this</span>->role === <span class="st">'admin'</span>;
+}
+
+<span class="kw">public function</span> <span class="fn">isCustomer</span>(): <span class="tp">bool</span> {
+    <span class="kw">return</span> <span class="tp">$this</span>->role === <span class="st">'customer'</span>;
+}</div>
+    </div>
+
+    <!-- ======================== CATEGORIES ======================== -->
+    <div class="section" id="categories">
+        <h2>5. Tabel <code>categories</code></h2>
+        <p>Menyimpan data kategori produk/motor. Digunakan untuk mengelompokkan produk (misal: Motor Sport, Motor Matic, Aksesoris, dll).</p>
+
+        <h3>Struktur Kolom</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Constraint</th><th>Default</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge pk">PK</span> <span class="badge pk">AUTO_INCREMENT</span></td><td>—</td><td>Identifier unik kategori</td></tr>
+                <tr><td class="col-name">name</td><td class="col-type">VARCHAR(255)</td><td>NOT NULL</td><td>—</td><td>Nama kategori</td></tr>
+                <tr><td class="col-name">description</td><td class="col-type">TEXT</td><td>NULLABLE</td><td><code>NULL</code></td><td>Deskripsi singkat kategori</td></tr>
+                <tr><td class="col-name">status</td><td class="col-type">ENUM('active','inactive')</td><td>NOT NULL</td><td><code>'active'</code></td><td>Status tampil/tidak di katalog</td></tr>
+                <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu dibuat</td></tr>
+                <tr><td class="col-name">updated_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu diperbarui</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Relasi Eloquent</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Method</th><th>Tipe</th><th>Model</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">products()</td><td>hasMany</td><td>Product</td><td>Satu kategori punya banyak produk</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <div class="info-box">
+            <strong>Scope:</strong> <code>Category::active()</code> — memfilter kategori dengan <code>status = 'active'</code>.<br>
+            <strong>Accessor:</strong> <code>$category->statusLabel</code> — mengembalikan label Indonesia: 'active' → 'Aktif', 'inactive' → 'Tidak Aktif'.
+        </div>
+    </div>
+
+    <!-- ======================== SUPPLIERS ======================== -->
+    <div class="section" id="suppliers">
+        <h2>6. Tabel <code>suppliers</code></h2>
+        <p>Menyimpan data pemasok/penyalur motor dan suku cadang. Digunakan saat mencatat stok masuk.</p>
+
+        <h3>Struktur Kolom</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Constraint</th><th>Default</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge pk">PK</span> <span class="badge pk">AUTO_INCREMENT</span></td><td>—</td><td>Identifier unik pemasok</td></tr>
+                <tr><td class="col-name">name</td><td class="col-type">VARCHAR(255)</td><td>NOT NULL</td><td>—</td><td>Nama pemasok/perusahaan</td></tr>
+                <tr><td class="col-name">phone</td><td class="col-type">VARCHAR(255)</td><td>NULLABLE</td><td><code>NULL</code></td><td>Nomor telepon kontak</td></tr>
+                <tr><td class="col-name">address</td><td class="col-type">TEXT</td><td>NULLABLE</td><td><code>NULL</code></td><td>Alamat pemasok</td></tr>
+                <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu dibuat</td></tr>
+                <tr><td class="col-name">updated_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu diperbarui</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Relasi Eloquent</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Method</th><th>Tipe</th><th>Model</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">stockIns()</td><td>hasMany</td><td>StockIn</td><td>Satu pemasok mengirim stok berkali-kali</td></tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <!-- ======================== PRODUCTS ======================== -->
+    <div class="section" id="products">
+        <h2>7. Tabel <code>products</code></h2>
+        <p>Menyimpan data motor/produk yang dijual. Merupakan tabel sentral yang berhubungan dengan banyak tabel lain: kategori, stok masuk/keluar, keranjang, pesanan, dan riwayat stok.</p>
+
+        <h3>Struktur Kolom</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Constraint</th><th>Default</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge pk">PK</span> <span class="badge pk">AUTO_INCREMENT</span></td><td>—</td><td>Identifier unik produk</td></tr>
+                <tr><td class="col-name">category_id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge fk">FK → categories.id</span> NOT NULL</td><td>—</td><td>Kategori produk</td></tr>
+                <tr><td class="col-name">name</td><td class="col-type">VARCHAR(255)</td><td>NOT NULL</td><td>—</td><td>Nama produk/motor</td></tr>
+                <tr><td class="col-name">price</td><td class="col-type">DECIMAL(10,2)</td><td>NOT NULL</td><td>—</td><td>Harga jual dalam Rupiah</td></tr>
+                <tr><td class="col-name">stock</td><td class="col-type">INTEGER</td><td>NOT NULL</td><td><code>0</code></td><td>Jumlah stok tersedia</td></tr>
+                <tr><td class="col-name">description</td><td class="col-type">TEXT</td><td>NULLABLE</td><td><code>NULL</code></td><td>Deskripsi produk / spesifikasi</td></tr>
+                <tr><td class="col-name">image</td><td class="col-type">VARCHAR(255)</td><td>NULLABLE</td><td><code>NULL</code></td><td>Path file gambar (di <code>storage/</code>)</td></tr>
+                <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu dibuat</td></tr>
+                <tr><td class="col-name">updated_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu diperbarui</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Relasi Eloquent</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Method</th><th>Tipe</th><th>Model</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">category()</td><td>belongsTo</td><td>Category</td><td>Produk milik satu kategori</td></tr>
+                <tr><td class="col-name">stockHistories()</td><td>hasMany</td><td>StockHistory</td><td>Riwayat perubahan stok produk</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Scopes & Methods</h3>
+        <div class="code"><span class="cm">// Scopes</span>
+<span class="fn">scopeLowStock</span>(<span class="tp">$query</span>, <span class="tp">$threshold</span> = <span class="st">5</span>)  <span class="cm">// stok <= threshold</span>
+<span class="fn">scopeOutOfStock</span>(<span class="tp">$query</span>)              <span class="cm">// stok = 0</span>
+<span class="fn">scopeAvailable</span>(<span class="tp">$query</span>)                <span class="cm">// stok > 0</span>
+
+<span class="cm">// Methods</span>
+<span class="fn">hasStock</span>(<span class="tp">$qty</span>): <span class="tp">bool</span>   <span class="cm">// Cek apakah stok mencukupi</span>
+<span class="fn">isAvailable</span>(): <span class="tp">bool</span>    <span class="cm">// Cek apakah stok > 0</span>
+
+<span class="cm">// Accessors</span>
+<span class="tp">$product</span>-><span class="fn">formattedPrice</span>  <span class="cm">// "Rp 25.000.000"</span>
+<span class="tp">$product</span>-><span class="fn">imageUrl</span>        <span class="cm">// URL gambar atau default</span></div>
+    </div>
+
+    <!-- ======================== STOCK_INS ======================== -->
+    <div class="section" id="stock-ins">
+        <h2>8. Tabel <code>stock_ins</code></h2>
+        <p>Mencatat setiap penerimaan stok baru dari pemasok. Setiap record merepresentasikan satu transaksi stok masuk untuk satu produk.</p>
+
+        <h3>Struktur Kolom</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Constraint</th><th>Default</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge pk">PK</span> <span class="badge pk">AUTO_INCREMENT</span></td><td>—</td><td>Identifier unik</td></tr>
+                <tr><td class="col-name">product_id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge fk">FK → products.id</span> NOT NULL</td><td>—</td><td>Produk yang masuk stoknya</td></tr>
+                <tr><td class="col-name">supplier_id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge fk">FK → suppliers.id</span> NULLABLE</td><td><code>NULL</code></td><td>Pemasok (bisa null jika tidak diketahui)</td></tr>
+                <tr><td class="col-name">tanggal_masuk</td><td class="col-type">DATE</td><td>NOT NULL</td><td>—</td><td>Tanggal penerimaan stok</td></tr>
+                <tr><td class="col-name">qty</td><td class="col-type">INTEGER</td><td>NOT NULL</td><td>—</td><td>Jumlah unit yang diterima</td></tr>
+                <tr><td class="col-name">keterangan</td><td class="col-type">TEXT</td><td>NULLABLE</td><td><code>NULL</code></td><td>Catatan tambahan (opsional)</td></tr>
+                <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu dibuat</td></tr>
+                <tr><td class="col-name">updated_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu diperbarui</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Relasi Eloquent</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Method</th><th>Tipe</th><th>Model</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">product()</td><td>belongsTo</td><td>Product</td><td>Stok masuk untuk produk tertentu</td></tr>
+                <tr><td class="col-name">supplier()</td><td>belongsTo</td><td>Supplier</td><td>Dari pemasok mana</td></tr>
+                <tr><td class="col-name">stockHistory()</td><td>hasOne</td><td>StockHistory</td><td>Riwayat terkait (polymorphic)</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <div class="info-box">
+            <strong>Proses Stok Masuk (dalam transaction):</strong><br>
+            1. Buat record <code>stock_ins</code><br>
+            2. Tambahkan <code>qty</code> ke <code>products.stock</code><br>
+            3. Catat di <code>stock_histories</code> (type: 'in')<br>
+            4. Jika gagal → rollback semua perubahan
+        </div>
+    </div>
+
+    <!-- ======================== STOCK_OUTS ======================== -->
+    <div class="section" id="stock-outs">
+        <h2>9. Tabel <code>stock_outs</code></h2>
+        <p>Mencatat setiap pengeluaran stok yang terjadi karena alasan selain penjualan (rusak, hilang, kadaluarsa, dll). Untuk pengeluaran karena penjualan, dicatat melalui <code>stock_histories</code> dengan type 'sale'.</p>
+
+        <h3>Struktur Kolom</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Constraint</th><th>Default</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge pk">PK</span> <span class="badge pk">AUTO_INCREMENT</span></td><td>—</td><td>Identifier unik</td></tr>
+                <tr><td class="col-name">product_id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge fk">FK → products.id</span> NOT NULL</td><td>—</td><td>Produk yang stoknya keluar</td></tr>
+                <tr><td class="col-name">tanggal_keluar</td><td class="col-type">DATE</td><td>NOT NULL</td><td>—</td><td>Tanggal pengeluaran</td></tr>
+                <tr><td class="col-name">qty</td><td class="col-type">INTEGER</td><td>NOT NULL</td><td>—</td><td>Jumlah unit yang keluar</td></tr>
+                <tr><td class="col-name">alasan</td><td class="col-type">ENUM('rusak','hilang','kadaluarsa','lainnya')</td><td>NOT NULL</td><td><code>'lainnya'</code></td><td>Alasan stok keluar</td></tr>
+                <tr><td class="col-name">keterangan</td><td class="col-type">TEXT</td><td>NULLABLE</td><td><code>NULL</code></td><td>Catatan tambahan</td></tr>
+                <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu dibuat</td></tr>
+                <tr><td class="col-name">updated_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu diperbarui</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Relasi Eloquent</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Method</th><th>Tipe</th><th>Model</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">product()</td><td>belongsTo</td><td>Product</td><td>Produk yang kehilangan stok</td></tr>
+                <tr><td class="col-name">stockHistory()</td><td>hasOne</td><td>StockHistory</td><td>Riwayat terkait (polymorphic)</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <div class="info-box">
+            <strong>Accessor:</strong> <code>$stockOut->alasanLabel</code> → 'rusak' = 'Barang Rusak', 'hilang' = 'Barang Hilang', 'kadaluarsa' = 'Kadaluarsa', 'lainnya' = 'Lainnya'
+        </div>
+    </div>
+
+    <!-- ======================== STOCK_HISTORIES ======================== -->
+    <div class="section" id="stock-hist">
+        <h2>10. Tabel <code>stock_histories</code></h2>
+        <p>Tabel audit trail untuk setiap perubahan stok produk. Mencatat stok sebelum dan sesudah perubahan, serta sumber perubahan melalui <strong>polymorphic relation</strong> (<code>reference_type</code> + <code>reference_id</code>).</p>
+
+        <h3>Struktur Kolom</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Constraint</th><th>Default</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge pk">PK</span> <span class="badge pk">AUTO_INCREMENT</span></td><td>—</td><td>Identifier unik</td></tr>
+                <tr><td class="col-name">product_id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge fk">FK → products.id</span> NOT NULL</td><td>—</td><td>Produk yang stoknya berubah</td></tr>
+                <tr><td class="col-name">type</td><td class="col-type">ENUM('in','out','sale')</td><td>NOT NULL</td><td>—</td><td>Jenis perubahan stok</td></tr>
+                <tr><td class="col-name">qty</td><td class="col-type">INTEGER</td><td>NOT NULL</td><td>—</td><td>Jumlah perubahan (selalu positif)</td></tr>
+                <tr><td class="col-name">stock_before</td><td class="col-type">INTEGER</td><td>NOT NULL</td><td>—</td><td>Jumlah stok sebelum perubahan</td></tr>
+                <tr><td class="col-name">stock_after</td><td class="col-type">INTEGER</td><td>NOT NULL</td><td>—</td><td>Jumlah stok sesudah perubahan</td></tr>
+                <tr><td class="col-name">reference_id</td><td class="col-type">BIGINT UNSIGNED</td><td>NULLABLE</td><td><code>NULL</code></td><td>ID record sumber (polymorphic)</td></tr>
+                <tr><td class="col-name">reference_type</td><td class="col-type">VARCHAR(255)</td><td>NULLABLE</td><td><code>NULL</code></td><td>Nama class sumber (polymorphic)</td></tr>
+                <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu dibuat</td></tr>
+                <tr><td class="col-name">updated_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu diperbarui</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Nilai <code>type</code> dan <code>reference_type</code></h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>type</th><th>reference_type</th><th>Arti</th><th>Dampak Stok</th></tr></thead>
+            <tbody>
+                <tr><td><code>'in'</code></td><td><code>'App\Models\StockIn'</code></td><td>Stok masuk dari pemasok</td><td>↑ Tambah</td></tr>
+                <tr><td><code>'out'</code></td><td><code>'App\Models\StockOut'</code></td><td>Stok keluar (rusak/hilang/kadaluarsa)</td><td>↓ Kurang</td></tr>
+                <tr><td><code>'sale'</code></td><td><code>'App\Models\Order'</code></td><td>Stok berkurang karena penjualan</td><td>↓ Kurang</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Scopes & Accessors</h3>
+        <div class="code"><span class="cm">// Scopes</span>
+<span class="fn">scopeStockIn</span>(<span class="tp">$query</span>)   <span class="cm">// type = 'in'</span>
+<span class="fn">scopeStockOut</span>(<span class="tp">$query</span>)  <span class="cm">// type = 'out'</span>
+<span class="fn">scopeSale</span>(<span class="tp">$query</span>)      <span class="cm">// type = 'sale'</span>
+
+<span class="cm">// Accessors</span>
+<span class="tp">$history</span>-><span class="fn">typeLabel</span>    <span class="cm">// "Stok Masuk" / "Stok Keluar" / "Penjualan"</span>
+<span class="tp">$history</span>-><span class="fn">changeText</span>   <span class="cm">// "+10" atau "-5"</span></div>
+    </div>
+
+    <!-- ======================== CARTS ======================== -->
+    <div class="section" id="carts">
+        <h2>11. Tabel <code>carts</code></h2>
+        <p>Menyimpan data keranjang belanja. Setiap pengguna (pelanggan) memiliki tepat satu keranjang aktif.</p>
+
+        <h3>Struktur Kolom</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Constraint</th><th>Default</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge pk">PK</span> <span class="badge pk">AUTO_INCREMENT</span></td><td>—</td><td>Identifier unik keranjang</td></tr>
+                <tr><td class="col-name">user_id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge fk">FK → users.id</span> NOT NULL</td><td>—</td><td>Pemilik keranjang</td></tr>
+                <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu dibuat</td></tr>
+                <tr><td class="col-name">updated_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu diperbarui</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Relasi & Accessors</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Method</th><th>Tipe</th><th>Model/Return</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">user()</td><td>belongsTo</td><td>User</td><td>Pemilik keranjang</td></tr>
+                <tr><td class="col-name">cartItems()</td><td>hasMany</td><td>CartItem</td><td>Item dalam keranjang</td></tr>
+                <tr><td class="col-name">total</td><td>Accessor</td><td>float</td><td>Sum(qty × price) semua item</td></tr>
+                <tr><td class="col-name">totalItems</td><td>Accessor</td><td>int</td><td>Total jumlah item</td></tr>
+                <tr><td class="col-name">isEmpty</td><td>Accessor</td><td>bool</td><td>Apakah keranjang kosong</td></tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <!-- ======================== CART_ITEMS ======================== -->
+    <div class="section" id="cart-items">
+        <h2>12. Tabel <code>cart_items</code></h2>
+        <p>Menyimpan item-item di dalam keranjang belanja. Setiap baris merepresentasikan satu produk tertentu dalam jumlah tertentu. <strong>Harga disimpan saat ditambahkan</strong> (snapshot) agar tidak berubah jika harga produk diperbarui.</p>
+
+        <h3>Struktur Kolom</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Constraint</th><th>Default</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge pk">PK</span> <span class="badge pk">AUTO_INCREMENT</span></td><td>—</td><td>Identifier unik</td></tr>
+                <tr><td class="col-name">cart_id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge fk">FK → carts.id</span> NOT NULL</td><td>—</td><td>Keranjang induk</td></tr>
+                <tr><td class="col-name">product_id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge fk">FK → products.id</span> NOT NULL</td><td>—</td><td>Produk yang dipilih</td></tr>
+                <tr><td class="col-name">qty</td><td class="col-type">INTEGER</td><td>NOT NULL</td><td><code>1</code></td><td>Jumlah yang ingin dibeli</td></tr>
+                <tr><td class="col-name">price</td><td class="col-type">DECIMAL(10,2)</td><td>NOT NULL</td><td>—</td><td>Harga satuan saat ditambahkan</td></tr>
+                <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu dibuat</td></tr>
+                <tr><td class="col-name">updated_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu diperbarui</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Relasi & Accessors</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Method</th><th>Tipe</th><th>Model/Return</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">cart()</td><td>belongsTo</td><td>Cart</td><td>Keranjang induk</td></tr>
+                <tr><td class="col-name">product()</td><td>belongsTo</td><td>Product</td><td>Produk terkait</td></tr>
+                <tr><td class="col-name">subtotal</td><td>Accessor</td><td>float</td><td>qty × price</td></tr>
+                <tr><td class="col-name">formattedSubtotal</td><td>Accessor</td><td>string</td><td>"Rp 50.000.000"</td></tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <!-- ======================== SHIPPING_ADDRESSES ======================== -->
+    <div class="section" id="shipping">
+        <h2>13. Tabel <code>shipping_addresses</code></h2>
+        <p>Menyimpan alamat pengiriman milik pelanggan. Satu pelanggan bisa memiliki banyak alamat, dan saat checkout alamat dipilih salah satu.</p>
+
+        <h3>Struktur Kolom</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Constraint</th><th>Default</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge pk">PK</span> <span class="badge pk">AUTO_INCREMENT</span></td><td>—</td><td>Identifier unik</td></tr>
+                <tr><td class="col-name">user_id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge fk">FK → users.id</span> NOT NULL</td><td>—</td><td>Pemilik alamat</td></tr>
+                <tr><td class="col-name">recipient_name</td><td class="col-type">VARCHAR(255)</td><td>NOT NULL</td><td>—</td><td>Nama penerima barang</td></tr>
+                <tr><td class="col-name">phone</td><td class="col-type">VARCHAR(255)</td><td>NOT NULL</td><td>—</td><td>Nomor telepon penerima</td></tr>
+                <tr><td class="col-name">address</td><td class="col-type">TEXT</td><td>NOT NULL</td><td>—</td><td>Alamat jalan lengkap</td></tr>
+                <tr><td class="col-name">city</td><td class="col-type">VARCHAR(255)</td><td>NOT NULL</td><td>—</td><td>Kota/Kabupaten</td></tr>
+                <tr><td class="col-name">province</td><td class="col-type">VARCHAR(255)</td><td>NOT NULL</td><td>—</td><td>Provinsi</td></tr>
+                <tr><td class="col-name">postal_code</td><td class="col-type">VARCHAR(255)</td><td>NOT NULL</td><td>—</td><td>Kode pos</td></tr>
+                <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu dibuat</td></tr>
+                <tr><td class="col-name">updated_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu diperbarui</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Relasi & Accessors</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Method</th><th>Tipe</th><th>Model/Return</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">user()</td><td>belongsTo</td><td>User</td><td>Pemilik alamat</td></tr>
+                <tr><td class="col-name">orders()</td><td>hasMany</td><td>Order</td><td>Pesanan yang menggunakan alamat ini</td></tr>
+                <tr><td class="col-name">fullAddress</td><td>Accessor</td><td>string</td><td>"Jl. Merdeka 10, Surabaya, Jawa Timur 60123"</td></tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <!-- ======================== ORDERS ======================== -->
+    <div class="section" id="orders">
+        <h2>14. Tabel <code>orders</code></h2>
+        <p>Menyimpan data pesanan/pembelian dari pelanggan. Setiap pesanan punya <strong>nomor unik</strong> (<code>ORD-YYYYMMDD-XXXX</code>), total harga, status pesanan, dan status pembayaran.</p>
+
+        <h3>Struktur Kolom</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Constraint</th><th>Default</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge pk">PK</span> <span class="badge pk">AUTO_INCREMENT</span></td><td>—</td><td>Identifier unik</td></tr>
+                <tr><td class="col-name">user_id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge fk">FK → users.id</span> NOT NULL</td><td>—</td><td>Pelanggan yang memesan</td></tr>
+                <tr><td class="col-name">shipping_address_id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge fk">FK → shipping_addresses.id</span> NULLABLE</td><td><code>NULL</code></td><td>Alamat pengiriman</td></tr>
+                <tr><td class="col-name">order_number</td><td class="col-type">VARCHAR(255)</td><td><span class="badge uk">UNIQUE</span> NOT NULL</td><td>—</td><td>Nomor pesanan: ORD-20240115-0001</td></tr>
+                <tr><td class="col-name">total</td><td class="col-type">DECIMAL(10,2)</td><td>NOT NULL</td><td>—</td><td>Total harga seluruh item</td></tr>
+                <tr><td class="col-name">status</td><td class="col-type">ENUM('pending','processed','shipped','completed','cancelled')</td><td>NOT NULL</td><td><code>'pending'</code></td><td>Status pemrosesan pesanan</td></tr>
+                <tr><td class="col-name">payment_status</td><td class="col-type">ENUM('unpaid','pending','paid','rejected')</td><td>NOT NULL</td><td><code>'unpaid'</code></td><td>Status pembayaran</td></tr>
+                <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu dibuat</td></tr>
+                <tr><td class="col-name">updated_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu diperbarui</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Nilai ENUM <code>status</code></h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Nilai</th><th>Label Indonesia</th><th>Arti</th></tr></thead>
+            <tbody>
+                <tr><td><code>pending</code></td><td>Menunggu Pembayaran</td><td>Pesanan baru dibuat, belum dibayar</td></tr>
+                <tr><td><code>processed</code></td><td>Diproses (Sudah Bayar)</td><td>Pembayaran diterima, sedang diproses</td></tr>
+                <tr><td><code>shipped</code></td><td>Dikirim</td><td>Barang sedang dikirim</td></tr>
+                <tr><td><code>completed</code></td><td>Selesai</td><td>Pesanan selesai diterima</td></tr>
+                <tr><td><code>cancelled</code></td><td>Dibatalkan</td><td>Pesanan dibatalkan</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Nilai ENUM <code>payment_status</code></h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Nilai</th><th>Label Indonesia</th><th>Arti</th></tr></thead>
+            <tbody>
+                <tr><td><code>unpaid</code></td><td>Belum Dibayar</td><td>Belum ada pembayaran masuk</td></tr>
+                <tr><td><code>pending</code></td><td>Menunggu Transaksi</td><td>Pembayaran sedang diproses Midtrans</td></tr>
+                <tr><td><code>paid</code></td><td>Pembayaran Berhasil</td><td>Pembayaran berhasil diverifikasi</td></tr>
+                <tr><td><code>rejected</code></td><td>Pembayaran Gagal/Expired</td><td>Pembayaran ditolak atau kedaluwarsa</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Relasi Eloquent</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Method</th><th>Tipe</th><th>Model</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">user()</td><td>belongsTo</td><td>User</td><td>Pelanggan pemesan</td></tr>
+                <tr><td class="col-name">orderItems()</td><td>hasMany</td><td>OrderItem</td><td>Item-item dalam pesanan</td></tr>
+                <tr><td class="col-name">payment()</td><td>hasOne</td><td>Payment</td><td>Catatan pembayaran</td></tr>
+                <tr><td class="col-name">shippingAddress()</td><td>belongsTo</td><td>ShippingAddress</td><td>Alamat pengiriman</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Method Penting</h3>
+        <div class="code"><span class="cm">// Generate nomor pesanan unik</span>
+<span class="tp">Order</span>::<span class="fn">generateOrderNumber</span>();  <span class="cm">// → "ORD-20240115-0001"</span>
+
+<span class="cm">// Status checks</span>
+<span class="tp">$order</span>-><span class="fn">canPay</span>()      <span class="cm">// true jika payment_status === 'unpaid'</span>
+<span class="tp">$order</span>-><span class="fn">canProcess</span>()  <span class="cm">// true jika paid + pending</span>
+<span class="tp">$order</span>-><span class="fn">isPaid</span>()       <span class="cm">// true jika payment_status === 'paid'</span></div>
+    </div>
+
+    <!-- ======================== ORDER_ITEMS ======================== -->
+    <div class="section" id="order-items">
+        <h2>15. Tabel <code>order_items</code></h2>
+        <p>Menyimpan item-item di dalam pesanan. Setiap baris merepresentasikan satu produk yang dibeli dalam satu pesanan. Harga dan subtotal <strong>disimpan saat checkout</strong> (snapshot) sebagai bukti transaksi.</p>
+
+        <h3>Struktur Kolom</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Constraint</th><th>Default</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge pk">PK</span> <span class="badge pk">AUTO_INCREMENT</span></td><td>—</td><td>Identifier unik</td></tr>
+                <tr><td class="col-name">order_id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge fk">FK → orders.id</span> NOT NULL</td><td>—</td><td>Pesanan induk</td></tr>
+                <tr><td class="col-name">product_id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge fk">FK → products.id</span> NOT NULL</td><td>—</td><td>Produk yang dibeli</td></tr>
+                <tr><td class="col-name">qty</td><td class="col-type">INTEGER</td><td>NOT NULL</td><td>—</td><td>Jumlah yang dibeli</td></tr>
+                <tr><td class="col-name">price</td><td class="col-type">DECIMAL(10,2)</td><td>NOT NULL</td><td>—</td><td>Harga satuan saat checkout</td></tr>
+                <tr><td class="col-name">subtotal</td><td class="col-type">DECIMAL(10,2)</td><td>NOT NULL</td><td>—</td><td>qty × price</td></tr>
+                <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu dibuat</td></tr>
+                <tr><td class="col-name">updated_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu diperbarui</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Relasi & Accessors</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Method</th><th>Tipe</th><th>Model/Return</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">order()</td><td>belongsTo</td><td>Order</td><td>Pesanan induk</td></tr>
+                <tr><td class="col-name">product()</td><td>belongsTo</td><td>Product</td><td>Produk terkait</td></tr>
+                <tr><td class="col-name">formattedSubtotal</td><td>Accessor</td><td>string</td><td>"Rp 50.000.000"</td></tr>
+                <tr><td class="col-name">formattedPrice</td><td>Accessor</td><td>string</td><td>"Rp 25.000.000"</td></tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <!-- ======================== PAYMENTS ======================== -->
+    <div class="section" id="payments">
+        <h2>16. Tabel <code>payments</code></h2>
+        <p>Menyimpan catatan pembayaran untuk setiap pesanan. Mendukung <strong>dua metode pembayaran</strong>: (1) Midtrans Snap (otomatis via API) dan (2) Manual upload bukti transfer. Tabel ini memiliki banyak kolom untuk menampung data dari kedua metode.</p>
+
+        <h3>Struktur Kolom</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Constraint</th><th>Default</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge pk">PK</span> <span class="badge pk">AUTO_INCREMENT</span></td><td>—</td><td>Identifier unik</td></tr>
+                <tr><td class="col-name">order_id</td><td class="col-type">BIGINT UNSIGNED</td><td><span class="badge fk">FK → orders.id</span> NOT NULL</td><td>—</td><td>Pesanan terkait</td></tr>
+                <tr><td class="col-name" style="color:#93c5fd;" colspan="5" style="padding-top:12px;"><em>── Kolom Midtrans ──</em></td></tr>
+                <tr><td class="col-name">midtrans_transaction_id</td><td class="col-type">VARCHAR(255)</td><td>NULLABLE</td><td><code>NULL</code></td><td>ID transaksi dari Midtrans</td></tr>
+                <tr><td class="col-name">snap_token</td><td class="col-type">VARCHAR(255)</td><td>NULLABLE</td><td><code>NULL</code></td><td>Token untuk pop-up pembayaran</td></tr>
+                <tr><td class="col-name">transaction_id</td><td class="col-type">VARCHAR(255)</td><td>NULLABLE</td><td><code>NULL</code></td><td>ID transaksi (dari webhook)</td></tr>
+                <tr><td class="col-name">payment_type</td><td class="col-type">VARCHAR(255)</td><td>NULLABLE</td><td><code>NULL</code></td><td>Tipe: bank_transfer, gopay, dll</td></tr>
+                <tr><td class="col-name">transaction_status</td><td class="col-type">VARCHAR(255)</td><td>NULLABLE</td><td><code>NULL</code></td><td>Status: settlement, pending, dll</td></tr>
+                <tr><td class="col-name">fraud_status</td><td class="col-type">VARCHAR(255)</td><td>NULLABLE</td><td><code>NULL</code></td><td>Hasil fraud check: accept/challenge/deny</td></tr>
+                <tr><td class="col-name">paid_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu pembayaran berhasil</td></tr>
+                <tr><td class="col-name" style="color:#93c5fd;" colspan="5"><em>── Kolom Manual Upload ──</em></td></tr>
+                <tr><td class="col-name">payment_method</td><td class="col-type">VARCHAR(255)</td><td>NULLABLE</td><td><code>NULL</code></td><td>Metode: transfer, gopay, dll</td></tr>
+                <tr><td class="col-name">proof</td><td class="col-type">VARCHAR(255)</td><td>NULLABLE</td><td><code>NULL</code></td><td>Path file bukti transfer</td></tr>
+                <tr><td class="col-name">uploaded_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu bukti diunggah</td></tr>
+                <tr><td class="col-name" style="color:#93c5fd;" colspan="5"><em>── Kolom Status & Verifikasi ──</em></td></tr>
+                <tr><td class="col-name">status</td><td class="col-type">VARCHAR(50)</td><td>NOT NULL</td><td><code>'pending'</code></td><td>pending/settlement/verified/rejected/deny/expire/cancel</td></tr>
+                <tr><td class="col-name">admin_notes</td><td class="col-type">TEXT</td><td>NULLABLE</td><td><code>NULL</code></td><td>Catatan admin saat verifikasi</td></tr>
+                <tr><td class="col-name">verified_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu admin memverifikasi</td></tr>
+                <tr><td class="col-name">rejected_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu admin menolak</td></tr>
+                <tr><td class="col-name">rejected_reason</td><td class="col-type">TEXT</td><td>NULLABLE</td><td><code>NULL</code></td><td>Alasan penolakan</td></tr>
+                <tr><td class="col-name">created_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu dibuat</td></tr>
+                <tr><td class="col-name">updated_at</td><td class="col-type">TIMESTAMP</td><td>NULLABLE</td><td><code>NULL</code></td><td>Waktu diperbarui</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Relasi & Methods</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Method</th><th>Tipe</th><th>Model/Return</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td class="col-name">order()</td><td>belongsTo</td><td>Order</td><td>Pesanan terkait</td></tr>
+                <tr><td class="col-name">isVerified()</td><td>Method</td><td>bool</td><td>true jika status 'verified' atau 'settlement'</td></tr>
+                <tr><td class="col-name">isRejected()</td><td>Method</td><td>bool</td><td>true jika status 'rejected','deny','expire','cancel'</td></tr>
+                <tr><td class="col-name">isPending()</td><td>Method</td><td>bool</td><td>true jika status 'pending'</td></tr>
+                <tr><td class="col-name">verify()</td><td>Method</td><td>bool</td><td>Set status verified + verified_at</td></tr>
+                <tr><td class="col-name">reject()</td><td>Method</td><td>bool</td><td>Set status rejected + rejected_at</td></tr>
+                <tr><td class="col-name">paymentMethodLabel</td><td>Accessor</td><td>string</td><td>Nama metode dalam Bahasa Indonesia</td></tr>
+                <tr><td class="col-name">statusLabel</td><td>Accessor</td><td>string</td><td>Status dalam Bahasa Indonesia</td></tr>
+                <tr><td class="col-name">proofUrl</td><td>Accessor</td><td>string</td><td>URL lengkap ke file bukti</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>Alur Status Pembayaran</h3>
+        <div class="code">
+<span class="cm">┌─────────────────────────────────────────────────────────────────┐</span>
+<span class="cm">│                    ALUR STATUS PEMBAYARAN                        │</span>
+<span class="cm">├─────────────────────────────────────────────────────────────────┤</span>
+<span class="cm">│                                                                  │</span>
+<span class="cm">│  [pending] ─────── Midtrans Snap ──────▶ [settlement] (sukses)   │</span>
+<span class="cm">│      │                  │                                            │</span>
+<span class="cm">│      │                  ├──▶ [deny] (ditolak Midtrans)            │</span>
+<span class="cm">│      │                  ├──▶ [expire] (kedaluwarsa)               │</span>
+<span class="cm">│      │                  └──▶ [cancel] (dibatalkan)                │</span>
+<span class="cm">│      │                                                          │</span>
+<span class="cm">│      │──── Upload Manual ────▶ [pending] (menunggu verifikasi)  │</span>
+<span class="cm">│      │                           │                               │</span>
+<span class="cm">│      │                           ├──▶ [verified] (diterima admin)│</span>
+<span class="cm">│      │                           └──▶ [rejected] (ditolak admin) │</span>
+<span class="cm">│      │                                                          │</span>
+<span class="cm">│  [settlement/verified] ──▶ orders.payment_status = 'paid'       │</span>
+<span class="cm">│  [deny/expire/cancel/rejected] ──▶ orders.payment_status = 'rejected'</span>
+<span class="cm">│                                     + kembalikan stok otomatis   │</span>
+<span class="cm">│                                                                  │</span>
+<span class="cm">└─────────────────────────────────────────────────────────────────┘</span></div>
+    </div>
+
+    <!-- ======================== MIGRATION ======================== -->
+    <div class="section" id="migration">
+        <h2>17. Daftar Migration</h2>
+        <p>File migration berada di <code>database/migrations/</code>. Urutan execution berdasarkan timestamp nama file.</p>
+
+        <div class="table-container">
+        <table>
+            <thead><tr><th>No</th><th>File Migration</th><th>Aksi</th><th>Tabel</th></tr></thead>
+            <tbody>
+                <tr><td>1</td><td><code>0001_01_01_000000_create_users_table.php</code></td><td>CREATE</td><td>users, password_reset_tokens, sessions</td></tr>
+                <tr><td>2</td><td><code>0001_01_01_000001_create_cache_table.php</code></td><td>CREATE</td><td>cache, cache_locks</td></tr>
+                <tr><td>3</td><td><code>0001_01_01_000002_create_jobs_table.php</code></td><td>CREATE</td><td>jobs, job_batches, failed_jobs</td></tr>
+                <tr><td>4</td><td><code>2024_01_01_000001_add_role_to_users_table.php</code></td><td>ALTER</td><td>users (tambah kolom role)</td></tr>
+                <tr><td>5</td><td><code>2024_01_01_000002_create_categories_table.php</code></td><td>CREATE</td><td>categories</td></tr>
+                <tr><td>6</td><td><code>2024_01_01_000003_create_suppliers_table.php</code></td><td>CREATE</td><td>suppliers</td></tr>
+                <tr><td>7</td><td><code>2024_01_01_000004_create_products_table.php</code></td><td>CREATE</td><td>products</td></tr>
+                <tr><td>8</td><td><code>2024_01_01_000005_create_stock_ins_table.php</code></td><td>CREATE</td><td>stock_ins</td></tr>
+                <tr><td>9</td><td><code>2024_01_01_000006_create_stock_outs_table.php</code></td><td>CREATE</td><td>stock_outs</td></tr>
+                <tr><td>10</td><td><code>2024_01_01_000007_create_stock_histories_table.php</code></td><td>CREATE</td><td>stock_histories</td></tr>
+                <tr><td>11</td><td><code>2024_01_01_000008_create_carts_and_cart_items_table.php</code></td><td>CREATE</td><td>carts, cart_items</td></tr>
+                <tr><td>12</td><td><code>2024_01_01_000009_create_shipping_addresses_table.php</code></td><td>CREATE</td><td>shipping_addresses</td></tr>
+                <tr><td>13</td><td><code>2024_01_01_000010_create_orders_and_order_items_table.php</code></td><td>CREATE</td><td>orders, order_items</td></tr>
+                <tr><td>14</td><td><code>2024_01_01_000011_create_payments_table.php</code></td><td>CREATE</td><td>payments</td></tr>
+                <tr><td>15</td><td><code>2024_01_01_000012_add_columns_to_payments_table.php</code></td><td>ALTER</td><td>payments (uploaded_at, rejected_at, rejected_reason)</td></tr>
+                <tr><td>16</td><td><code>2026_05_13_010458_remove_extra_columns_from_payments_table.php</code></td><td>NO-OP</td><td>(placeholder, tidak ada perubahan)</td></tr>
+                <tr><td>17</td><td><code>2026_07_08_024328_add_midtrans_columns_to_payments_table.php</code></td><td>ALTER</td><td>payments (transaction_id, snap_token, payment_type, dll)</td></tr>
+                <tr><td>18</td><td><code>2026_07_14_000001_fix_orders_and_payments_for_midtrans.php</code></td><td>ALTER</td><td>orders (drop snap_token, ubah payment_status enum), payments (status → varchar)</td></tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <!-- ======================== MODEL ======================== -->
+    <div class="section" id="model">
+        <h2>18. Daftar Model Eloquent</h2>
+        <p>Semua model berada di <code>app/Models/</code>. Berikut ringkasan fillable, casts, dan method kunci per model.</p>
+
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Model</th><th>Fillable</th><th>Casts</th><th>Method Kunci</th></tr></thead>
+            <tbody>
+                <tr>
+                    <td><strong>User</strong></td>
+                    <td>name, email, password, role</td>
+                    <td>email_verified_at (datetime), password (hashed)</td>
+                    <td>isAdmin(), isCustomer()</td>
+                </tr>
+                <tr>
+                    <td><strong>Category</strong></td>
+                    <td>name, description, status</td>
+                    <td>—</td>
+                    <td>scopeActive(), statusLabel</td>
+                </tr>
+                <tr>
+                    <td><strong>Supplier</strong></td>
+                    <td>name, phone, address</td>
+                    <td>—</td>
+                    <td>—</td>
+                </tr>
+                <tr>
+                    <td><strong>Product</strong></td>
+                    <td>category_id, name, price, stock, description, image</td>
+                    <td>price (decimal:2)</td>
+                    <td>hasStock(), isAvailable(), scopeLowStock(), scopeOutOfStock(), scopeAvailable(), formattedPrice, imageUrl</td>
+                </tr>
+                <tr>
+                    <td><strong>StockIn</strong></td>
+                    <td>product_id, supplier_id, tanggal_masuk, qty, keterangan</td>
+                    <td>tanggal_masuk (date)</td>
+                    <td>stockHistory()</td>
+                </tr>
+                <tr>
+                    <td><strong>StockOut</strong></td>
+                    <td>product_id, tanggal_keluar, qty, alasan, keterangan</td>
+                    <td>tanggal_keluar (date)</td>
+                    <td>alasanLabel, stockHistory()</td>
+                </tr>
+                <tr>
+                    <td><strong>StockHistory</strong></td>
+                    <td>product_id, type, qty, stock_before, stock_after, reference_id, reference_type</td>
+                    <td>—</td>
+                    <td>reference() (morphTo), scopeStockIn(), scopeStockOut(), scopeSale(), typeLabel, changeText</td>
+                </tr>
+                <tr>
+                    <td><strong>Cart</strong></td>
+                    <td>user_id</td>
+                    <td>—</td>
+                    <td>addItem(), clear(), total, totalItems, isEmpty</td>
+                </tr>
+                <tr>
+                    <td><strong>CartItem</strong></td>
+                    <td>cart_id, product_id, qty, price</td>
+                    <td>price (decimal:2)</td>
+                    <td>updateQty(), subtotal, formattedSubtotal</td>
+                </tr>
+                <tr>
+                    <td><strong>ShippingAddress</strong></td>
+                    <td>user_id, recipient_name, phone, address, city, province, postal_code</td>
+                    <td>—</td>
+                    <td>fullAddress</td>
+                </tr>
+                <tr>
+                    <td><strong>Order</strong></td>
+                    <td>user_id, shipping_address_id, order_number, total, status, payment_status</td>
+                    <td>total (decimal:2)</td>
+                    <td>generateOrderNumber(), canPay(), canProcess(), isPaid(), scopePending(), scopePaid(), formattedTotal, statusLabel, paymentStatusLabel</td>
+                </tr>
+                <tr>
+                    <td><strong>OrderItem</strong></td>
+                    <td>order_id, product_id, qty, price, subtotal</td>
+                    <td>price (decimal:2), subtotal (decimal:2)</td>
+                    <td>formattedSubtotal, formattedPrice</td>
+                </tr>
+                <tr>
+                    <td><strong>Payment</strong></td>
+                    <td>order_id, payment_method, proof, status, admin_notes, verified_at, uploaded_at, rejected_at, rejected_reason, snap_token, transaction_id, transaction_status</td>
+                    <td>verified_at (datetime), uploaded_at (datetime), rejected_at (datetime)</td>
+                    <td>verify(), reject(), isVerified(), isRejected(), isPending(), paymentMethodLabel, statusLabel, proofUrl</td>
+                </tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

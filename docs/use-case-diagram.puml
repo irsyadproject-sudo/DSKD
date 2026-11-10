@@ -1,0 +1,310 @@
+@startuml DPMS_UseCase_Diagram
+left to right direction
+skinparam packageStyle rectangle
+skinparam actorStyle awesome
+skinparam usecase {
+  BackgroundColor #F4F6F9
+  BorderColor #5e72e4
+  ArrowColor #344767
+  FontSize 13
+}
+skinparam actor {
+  BackgroundColor #5e72e4
+  BorderColor #3b5998
+  FontColor #344767
+  FontSize 14
+}
+skinparam package {
+  BackgroundColor #FFFFFF
+  BorderColor #e9ecef
+  FontSize 15
+  FontStyle bold
+}
+skinparam note {
+  BackgroundColor #fff4e5
+  BorderColor #ff9f43
+}
+
+title Use Case Diagram — DPMS (Digital Project Management System)
+
+actor "Super Admin" as SA
+actor "Project Manager" as PM
+actor "Team Member" as TM
+actor "Client" as C
+
+rectangle "Authentication" {
+  usecase "Login" as UC_Login
+  usecase "Register (Client)" as UC_Register
+  usecase "Logout" as UC_Logout
+}
+
+rectangle "Dashboard" {
+  usecase "Lihat Dashboard\n(Statistik & Chart)" as UC_Dashboard
+}
+
+rectangle "Manajemen User" {
+  usecase "Lihat Daftar User" as UC_ListUser
+  usecase "Tambah User" as UC_AddUser
+  usecase "Edit User" as UC_EditUser
+  usecase "Hapus User" as UC_DelUser
+}
+
+rectangle "Manajemen Client" {
+  usecase "Lihat Daftar Client" as UC_ListClient
+  usecase "Tambah Client" as UC_AddClient
+  usecase "Edit Client" as UC_EditClient
+  usecase "Hapus Client" as UC_DelClient
+  usecase "Lihat Detail Client" as UC_ShowClient
+}
+
+rectangle "Manajemen Proyek" {
+  usecase "Lihat Daftar Proyek" as UC_ListProject
+  usecase "Buat Proyek" as UC_AddProject
+  usecase "Lihat Detail Proyek" as UC_ShowProject
+  usecase "Edit Proyek" as UC_EditProject
+  usecase "Hapus Proyek" as UC_DelProject
+  usecase "Ubah Status Proyek" as UC_ChgStatusProject
+  usecase "Tambah Anggota Tim" as UC_AddMember
+  usecase "Hapus Anggota Tim" as UC_DelMember
+}
+
+rectangle "Manajemen Task" {
+  usecase "Lihat Daftar Task" as UC_ListTask
+  usecase "Buat Task" as UC_AddTask
+  usecase "Lihat Detail Task" as UC_ShowTask
+  usecase "Edit Task" as UC_EditTask
+  usecase "Hapus Task" as UC_DelTask
+  usecase "Update Progress Task" as UC_ProgressTask
+}
+
+rectangle "Kanban Board" {
+  usecase "Pilih Proyek\nKanban" as UC_KanbanIdx
+  usecase "Lihat Board\n(Drag & Drop)" as UC_KanbanShow
+  usecase "Pindahkan Task\nantar Kolom" as UC_KanbanMove
+}
+
+rectangle "File & Lampiran" {
+  usecase "Upload File" as UC_Upload
+  usecase "Download File" as UC_Download
+  usecase "Hapus File" as UC_DelFile
+}
+
+rectangle "Komentar" {
+  usecase "Tambah Komentar" as UC_AddComment
+  usecase "Hapus Komentar" as UC_DelComment
+}
+
+rectangle "Revisi" {
+  usecase "Ajukan Revisi" as UC_SubmitRevision
+  usecase "Lihat Daftar Revisi" as UC_ListRevision
+  usecase "Ubah Status Revisi" as UC_ChgRevisionStatus
+}
+
+rectangle "Persetujuan" {
+  usecase "Setujui Task\n(Approve)" as UC_Approve
+}
+
+rectangle "Laporan" {
+  usecase "Lihat Laporan" as UC_Report
+  usecase "Export CSV" as UC_ExportCSV
+  usecase "Export PDF" as UC_ExportPDF
+}
+
+rectangle "Notifikasi" {
+  usecase "Tandai Sudah Dibaca" as UC_NotifRead
+  usecase "Tandai Semua\nDibaca" as UC_NotifReadAll
+  usecase "Hapus Notifikasi" as UC_DelNotif
+}
+
+rectangle "Profil" {
+  usecase "Lihat Profil" as UC_ShowProfile
+  usecase "Edit Profil" as UC_EditProfile
+}
+
+' ═══════════════════════ SUPER ADMIN ═══════════════════════
+SA --> UC_Login
+SA --> UC_Logout
+SA --> UC_Dashboard
+
+SA --> UC_ListUser
+SA --> UC_AddUser
+SA --> UC_EditUser
+SA --> UC_DelUser
+
+SA --> UC_ListClient
+SA --> UC_AddClient
+SA --> UC_EditClient
+SA --> UC_DelClient
+SA --> UC_ShowClient
+
+SA --> UC_ListProject
+SA --> UC_AddProject
+SA --> UC_ShowProject
+SA --> UC_EditProject
+SA --> UC_DelProject
+SA --> UC_ChgStatusProject
+SA --> UC_AddMember
+SA --> UC_DelMember
+
+SA --> UC_ListTask
+SA --> UC_AddTask
+SA --> UC_ShowTask
+SA --> UC_EditTask
+SA --> UC_DelTask
+SA --> UC_ProgressTask
+
+SA --> UC_KanbanIdx
+SA --> UC_KanbanShow
+SA --> UC_KanbanMove
+
+SA --> UC_Upload
+SA --> UC_Download
+SA --> UC_DelFile
+
+SA --> UC_AddComment
+SA --> UC_DelComment
+
+SA --> UC_ListRevision
+SA --> UC_ChgRevisionStatus
+
+SA --> UC_Report
+SA --> UC_ExportCSV
+SA --> UC_ExportPDF
+
+SA --> UC_NotifRead
+SA --> UC_NotifReadAll
+SA --> UC_DelNotif
+
+SA --> UC_ShowProfile
+SA --> UC_EditProfile
+
+' ═══════════════════════ PROJECT MANAGER ═══════════════════════
+PM --> UC_Login
+PM --> UC_Logout
+PM --> UC_Dashboard
+
+PM --> UC_ListClient
+PM --> UC_AddClient
+PM --> UC_EditClient
+PM --> UC_DelClient
+PM --> UC_ShowClient
+
+PM --> UC_ListProject
+PM --> UC_AddProject
+PM --> UC_ShowProject
+PM --> UC_EditProject
+PM --> UC_DelProject
+PM --> UC_ChgStatusProject
+PM --> UC_AddMember
+PM --> UC_DelMember
+
+PM --> UC_ListTask
+PM --> UC_AddTask
+PM --> UC_ShowTask
+PM --> UC_EditTask
+PM --> UC_DelTask
+PM --> UC_ProgressTask
+
+PM --> UC_KanbanIdx
+PM --> UC_KanbanShow
+PM --> UC_KanbanMove
+
+PM --> UC_Upload
+PM --> UC_Download
+PM --> UC_DelFile
+
+PM --> UC_AddComment
+PM --> UC_DelComment
+
+PM --> UC_ListRevision
+PM --> UC_ChgRevisionStatus
+
+PM --> UC_Report
+PM --> UC_ExportCSV
+PM --> UC_ExportPDF
+
+PM --> UC_NotifRead
+PM --> UC_NotifReadAll
+PM --> UC_DelNotif
+
+PM --> UC_ShowProfile
+PM --> UC_EditProfile
+
+' ═══════════════════════ TEAM MEMBER ═══════════════════════
+TM --> UC_Login
+TM --> UC_Logout
+TM --> UC_Dashboard
+
+TM --> UC_ListProject
+TM --> UC_ShowProject
+
+TM --> UC_ListTask
+TM --> UC_ShowTask
+TM --> UC_EditTask
+TM --> UC_ProgressTask
+
+TM --> UC_KanbanIdx
+TM --> UC_KanbanShow
+TM --> UC_KanbanMove
+
+TM --> UC_Upload
+TM --> UC_Download
+
+TM --> UC_AddComment
+TM --> UC_DelComment
+
+TM --> UC_ListRevision
+TM --> UC_ChgRevisionStatus
+
+TM --> UC_NotifRead
+TM --> UC_NotifReadAll
+TM --> UC_DelNotif
+
+TM --> UC_ShowProfile
+TM --> UC_EditProfile
+
+' ═══════════════════════ CLIENT ═══════════════════════
+C --> UC_Register
+C --> UC_Login
+C --> UC_Logout
+C --> UC_Dashboard
+
+C --> UC_ListProject
+C --> UC_AddProject
+C --> UC_ShowProject
+C --> UC_EditProject
+C --> UC_ChgStatusProject
+
+C --> UC_ListTask
+C --> UC_ShowTask
+
+C --> UC_KanbanIdx
+C --> UC_KanbanShow
+
+C --> UC_Download
+
+C --> UC_AddComment
+C --> UC_DelComment
+
+C --> UC_SubmitRevision
+C --> UC_ListRevision
+
+C --> UC_Approve
+
+C --> UC_Report
+C --> UC_ExportCSV
+C --> UC_ExportPDF
+
+C --> UC_NotifRead
+C --> UC_NotifReadAll
+C --> UC_DelNotif
+
+C --> UC_ShowProfile
+C --> UC_EditProfile
+
+' ═══════════════════ RELATIONSHIPS ═══════════════════
+UC_KanbanMove ..> UC_KanbanShow : <<include>>
+UC_ExportCSV ..> UC_Report : <<extend>>
+UC_ExportPDF ..> UC_Report : <<extend>>
+
+@enduml

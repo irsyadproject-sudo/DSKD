@@ -1,0 +1,41 @@
+@startuml Flow_Auth
+skinparam ActivityBackgroundColor #F4F6F9
+skinparam ActivityBorderColor #5e72e4
+skinparam ActivityDiamondBackgroundColor #eef1fb
+skinparam ActivityDiamondBorderColor #5e72e4
+skinparam ArrowColor #344767
+skinparam FontSize 13
+title Flowchart — Login & Registrasi
+
+|User|
+start
+:Kunjungi halaman **/login**;
+
+if (Sudah punya akun?) then (Ya)
+  :Input **Email** & **Password**;
+  :Klik tombol **Login**;
+
+  if (Valid berhasil?) then (Ya)
+    :Dashboard muncul\nsesuai role;
+    stop
+  else (Tidak)
+    :Tampilkan pesan\n"Email atau password salah";
+    :Kembali ke form login;
+    detach
+  endif
+else (Tidak — Client baru)
+  :Kunjungi halaman **/register**;
+  :Input **Nama, Email, Password**;
+  :Klik tombol **Daftar**;
+
+  if (Validasi OK?) then (Ya)
+    :Buat record **User** (role=client);\nBuat record **Client**;\nAuto-login;
+    :Dashboard Client muncul;
+    stop
+  else (Tidak)
+    :Tampilkan pesan validasi error;
+    :Kembali ke form register;
+    detach
+  endif
+endif
+@enduml

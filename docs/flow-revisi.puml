@@ -1,0 +1,45 @@
+@startuml Flow_Revisi
+skinparam ActivityBackgroundColor #F4F6F9
+skinparam ActivityBorderColor #5e72e4
+skinparam ActivityDiamondBackgroundColor #eef1fb
+skinparam ActivityDiamondBorderColor #5e72e4
+skinparam ArrowColor #344767
+skinparam FontSize 13
+title Flowchart — Alur Revisi Task
+
+|Client|
+start
+:Buka halaman **Revisi**;
+:Pilih proyek & task yang akan direvisi;
+:Isi **deskripsi revisi**;
+:Klik **Ajukan Revisi**;
+
+:Status task otomatis → **In Progress**;
+:Record revisi dibuat\n(status: **Menunggu**);
+:Notifikasi terkirim ke PM & Assignee;
+
+|PM / Team Member|
+:Login → lihat daftar revisi;
+:Klik revisi yang masuk;
+
+if (Aksi?) then (Proses)
+  :Ubah status revisi\n**Menunggu** → **Diproses**;
+  :Mulai mengerjakan perubahan;
+else (Selesai)
+  :Ubah status revisi\n**Diproses** → **Selesai**;
+  :Update progress task jika perlu;
+endif
+
+|Client|
+:Review hasil revisi;
+
+if (Sesuai?) then (Ya)
+  :Task selesai\n(bisa Approve langsung);
+  stop
+else (Tidak)
+  :Ajukan revisi lagi;
+  :Status task tetap **In Progress**;
+  :Revisi baru dibuat\n(status: **Menunggu**);
+  stop
+endif
+@enduml

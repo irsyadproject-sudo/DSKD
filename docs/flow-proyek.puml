@@ -1,0 +1,65 @@
+@startuml Flow_Project
+skinparam ActivityBackgroundColor #F4F6F9
+skinparam ActivityBorderColor #5e72e4
+skinparam ActivityDiamondBackgroundColor #eef1fb
+skinparam ActivityDiamondBorderColor #5e72e4
+skinparam ArrowColor #344767
+skinparam FontSize 13
+title Flowchart — Manajemen Proyek
+
+|PM / SA / Client|
+start
+:Klik menu **Proyek**;
+:Halaman daftar proyek terbuka;
+
+if (Aksi?) then (Buat Baru)
+  :Klik **+ Tambah Proyek**;
+  :Isi form:\n- Nama Proyek\n- Client\n- PM (auto untuk PM)\n- Deskripsi\n- Deadline & Budget\n- Prioritas & Status;
+  :Klik **Simpan**;
+
+  if (Validasi OK?) then (Ya)
+    :Proyek tersimpan\n(status awal: Draft);
+    :Tampilkan notifikasi sukses;
+    stop
+  else (Tidak)
+    :Tampilkan error validasi;
+    stop
+  endif
+
+elseif (Lihat Detail) then
+  :Klik nama proyek;
+  :Halaman detail proyek terbuka;
+  :Tampilkan info, anggota tim,\ntask, file, komentar;
+  stop
+
+elseif (Edit) then
+  :Klik **Edit** pada proyek;
+  :Ubah field yang diperlukan;
+  :Klik **Update**;
+  :Data proyek terbarui;
+  stop
+
+elseif (Ubah Status) then
+  :Klik tombol status\n(Draft/Berjalan/Review/Selesai);
+  :Status proyek berubah;
+  stop
+
+elseif (Kelola Anggota) then
+  :Klik **Tambah Anggota**;
+  :Pilih Team Member & sub-role\n(Programmer/Designer/dll);
+  :Anggota ditambahkan;
+  :Atau klik **Hapus** untuk\nmengeluarkan anggota;
+  stop
+
+else (Hapus)
+  :Klik **Hapus** proyek;
+  :Konfirmasi hapus;
+  if (Dikonfirmasi?) then (Ya)
+    :Proyek & semua data terkait\n(tasks, files, comments) terhapus;
+    stop
+  else (Tidak)
+    :Batal;
+    stop
+  endif
+endif
+@enduml

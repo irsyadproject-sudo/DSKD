@@ -1,0 +1,43 @@
+@startuml Flow_Kanban
+skinparam ActivityBackgroundColor #F4F6F9
+skinparam ActivityBorderColor #5e72e4
+skinparam ActivityDiamondBackgroundColor #eef1fb
+skinparam ActivityDiamondBorderColor #5e72e4
+skinparam ArrowColor #344767
+skinparam FontSize 13
+title Flowchart — Kanban Board (Drag & Drop)
+
+|User|
+start
+:Klik menu **Kanban**;
+:Pilih proyek dari daftar;
+:Board terbuka dengan 3 kolom:\n**To Do** | **In Progress** | **Done**;
+:Lihat semua task per kolom;
+
+:**Drag** kartu task dari kolom sumber;
+
+if (Drop ke kolom mana?) then (In Progress)
+  :Kartu masuk kolom **In Progress**;
+  :AJAX PUT → server update\nstatus task = `in_progress`;
+elseif (Done) then
+  :Kartu masuk kolom **Done**;
+  :AJAX PUT → server update\nstatus task = `done`;\nprogress otomatis = 100%;
+elseif (To Do) then
+  :Kartu masuk kolom **To Do**;
+  :AJAX PUT → server update\nstatus task = `to_do`;
+else (Kolom sama)
+  :Tidak ada perubahan;
+  stop
+endif
+
+:Counter badge kolom\notomatis terupdate;
+:Kartu tetap di posisi baru\n(tanpa reload halaman);
+
+if (AJAX berhasil?) then (Ya)
+  :Status tersimpan di database;
+  stop
+else (Gagal)
+  :Error di-handle secara silent\n(UI tetap optimis);
+  stop
+endif
+@enduml

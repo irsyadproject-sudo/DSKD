@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ERD & Use Case - Toko Motor Online</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+        .header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f172a 100%);
+            padding: 48px 20px 40px;
+            text-align: center;
+            border-bottom: 3px solid #3b82f6;
+            position: relative;
+            overflow: hidden;
+        }
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at center, rgba(59,130,246,0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .header h1 {
+            font-size: 2.2rem;
+            color: #60a5fa;
+            margin-bottom: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 0 0 30px rgba(96,165,250,0.15);
+        }
+        .header p {
+            color: #94a3b8;
+            font-size: 1rem;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+        .nav {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            padding: 14px 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid #1e3a5f;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+            backdrop-filter: blur(12px);
+        }
+        .nav a {
+            color: #94a3b8;
+            text-decoration: none;
+            padding: 7px 16px;
+            border-radius: 20px;
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid #334155;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .nav a:hover {
+            background: rgba(59, 130, 246, 0.15);
+            color: #60a5fa;
+            border-color: #3b82f6;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 12px rgba(59,130,246,0.15);
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 30px 20px; }
+        .section {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid #334155;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        .section h2 {
+            color: #60a5fa;
+            font-size: 1.6rem;
+            margin-bottom: 8px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #334155;
+        }
+        .section h3 {
+            color: #93c5fd;
+            font-size: 1.2rem;
+            margin: 20px 0 12px;
+        }
+        .section p {
+            color: #cbd5e1;
+            margin-bottom: 16px;
+        }
+        .mermaid {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+            text-align: center;
+        }
+        .table-container { overflow-x: auto; margin: 16px 0; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        th {
+            background: #334155;
+            color: #93c5fd;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 10px 16px;
+            border-bottom: 1px solid #334155;
+            color: #cbd5e1;
+        }
+        tr:hover td { background: rgba(59, 130, 246, 0.1); }
+        .badge {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-pk { background: #7c3aed22; color: #a78bfa; border: 1px solid #7c3aed44; }
+        .badge-fk { background: #0891b222; color: #67e8f9; border: 1px solid #0891b244; }
+        .badge-enum { background: #f59e0b22; color: #fbbf24; border: 1px solid #f59e0b44; }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        .stat-card .number {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #60a5fa;
+        }
+        .stat-card .label {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+        .usecase-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+        .usecase-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 20px;
+            transition: border-color 0.3s;
+        }
+        .usecase-card:hover { border-color: #3b82f6; }
+        .usecase-card h4 {
+            color: #60a5fa;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+        .usecase-card p {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+        }
+        .usecase-card .actor-tag {
+            display: inline-block;
+            background: #3b82f622;
+            color: #60a5fa;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        .flow-steps {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin: 16px 0;
+        }
+        .flow-step {
+            background: #334155;
+            color: #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+        .flow-arrow { color: #60a5fa; font-size: 1.2rem; font-weight: 700; }
+        @media (max-width: 768px) {
+            .header h1 { font-size: 1.5rem; }
+            .header { padding: 32px 16px 28px; }
+            .nav {
+                gap: 6px;
+                padding: 10px 12px;
+                justify-content: flex-start;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+            .nav a {
+                padding: 6px 12px;
+                font-size: 0.78rem;
+            }
+            .section { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>ERD & Use Case Diagram</h1>
+    <p>Sistem Informasi Toko Motor Online Berbasis Web</p>
+</div>
+
+<div class="nav">
+    <a href="#stats">Ringkasan</a>
+    <a href="#erd">ERD</a>
+    <a href="#erd-mermaid">ERD Diagram</a>
+    <a href="#tables">Detail Tabel</a>
+    <a href="#usecase">Use Case</a>
+    <a href="#usecase-admin">Admin</a>
+    <a href="#usecase-customer">Pelanggan</a>
+    <a href="#usecase-system">Sistem</a>
+    <a href="#flows">Alur Proses</a>
+</div>
+
+<div class="container">
+
+    <!-- RINGKASAN -->
+    <div class="section" id="stats">
+        <h2>Ringkasan Sistem</h2>
+        <div class="stats">
+            <div class="stat-card">
+                <div class="number">13</div>
+                <div class="label">Tabel Bisnis</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">4</div>
+                <div class="label">Aktor</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">33</div>
+                <div class="label">Use Case</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">13</div>
+                <div class="label">Model Eloquent</div>
+            </div>
+            <div class="stat-card">
+                <div class="number">2</div>
+                <div class="label">Role Pengguna</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ERD TEXT -->
+    <div class="section" id="erd">
+        <h2>1. Entity Relationship Diagram (ERD)</h2>
+        <p>Diagram hubungan antar entitas dalam basis data Toko Motor Online. Menggunakan notasi Crow's Foot.</p>
+
+        <h3>Hubungan Antar Tabel</h3>
+        <div class="table-container">
+        <table>
+            <thead>
+                <tr><th>Hubungan</th><th>Tipe</th><th>Foreign Key</th><th>Delete Rule</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>users → carts</td><td>1 : N</td><td>carts.user_id</td><td>CASCADE</td></tr>
+                <tr><td>carts → cart_items</td><td>1 : N</td><td>cart_items.cart_id</td><td>CASCADE</td></tr>
+                <tr><td>cart_items → products</td><td>N : 1</td><td>cart_items.product_id</td><td>CASCADE</td></tr>
+                <tr><td>users → shipping_addresses</td><td>1 : N</td><td>shipping_addresses.user_id</td><td>CASCADE</td></tr>
+                <tr><td>users → orders</td><td>1 : N</td><td>orders.user_id</td><td>CASCADE</td></tr>
+                <tr><td>shipping_addresses → orders</td><td>1 : N</td><td>orders.shipping_address_id</td><td>SET NULL</td></tr>
+                <tr><td>orders → order_items</td><td>1 : N</td><td>order_items.order_id</td><td>CASCADE</td></tr>
+                <tr><td>orders → payments</td><td>1 : 1</td><td>payments.order_id</td><td>CASCADE</td></tr>
+                <tr><td>order_items → products</td><td>N : 1</td><td>order_items.product_id</td><td>CASCADE</td></tr>
+                <tr><td>categories → products</td><td>1 : N</td><td>products.category_id</td><td>CASCADE</td></tr>
+                <tr><td>suppliers → stock_ins</td><td>1 : N</td><td>stock_ins.supplier_id</td><td>SET NULL</td></tr>
+                <tr><td>products → stock_ins</td><td>1 : N</td><td>stock_ins.product_id</td><td>CASCADE</td></tr>
+                <tr><td>products → stock_outs</td><td>1 : N</td><td>stock_outs.product_id</td><td>CASCADE</td></tr>
+                <tr><td>products → stock_histories</td><td>1 : N</td><td>stock_histories.product_id</td><td>CASCADE</td></tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <!-- ERD MERMAID -->
+    <div class="section" id="erd-mermaid">
+        <h2>ERD Diagram (Mermaid)</h2>
+        <div class="mermaid">
+erDiagram
+    USERS {
+        bigint id PK
+        varchar name
+        varchar email UK
+        enum role "admin|customer"
+        timestamp email_verified_at
+        varchar password
+        varchar remember_token
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    CATEGORIES {
+        bigint id PK
+        varchar name
+        text description
+        enum status "active|inactive"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    SUPPLIERS {
+        bigint id PK
+        varchar name
+        varchar phone
+        text address
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    PRODUCTS {
+        bigint id PK
+        bigint category_id FK
+        varchar name
+        decimal price
+        int stock
+        text description
+        varchar image
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    STOCK_INS {
+        bigint id PK
+        bigint product_id FK
+        bigint supplier_id FK
+        date tanggal_masuk
+        int qty
+        text keterangan
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    STOCK_OUTS {
+        bigint id PK
+        bigint product_id FK
+        date tanggal_keluar
+        int qty
+        enum alasan "rusak|hilang|kadaluarsa|lainnya"
+        text keterangan
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    STOCK_HISTORIES {
+        bigint id PK
+        bigint product_id FK
+        enum type "in|out|sale"
+        int qty
+        int stock_before
+        int stock_after
+        bigint reference_id
+        varchar reference_type
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    CARTS {
+        bigint id PK
+        bigint user_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    CART_ITEMS {
+        bigint id PK
+        bigint cart_id FK
+        bigint product_id FK
+        int qty
+        decimal price
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    SHIPPING_ADDRESSES {
+        bigint id PK
+        bigint user_id FK
+        varchar recipient_name
+        varchar phone
+        text address
+        varchar city
+        varchar province
+        varchar postal_code
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ORDERS {
+        bigint id PK
+        bigint user_id FK
+        bigint shipping_address_id FK
+        varchar order_number UK
+        decimal total
+        enum status "pending|processed|shipped|completed|cancelled"
+        enum payment_status "unpaid|pending|paid|rejected"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    ORDER_ITEMS {
+        bigint id PK
+        bigint order_id FK
+        bigint product_id FK
+        int qty
+        decimal price
+        decimal subtotal
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    PAYMENTS {
+        bigint id PK
+        bigint order_id FK
+        varchar midtrans_transaction_id
+        varchar payment_method
+        varchar proof
+        timestamp uploaded_at
+        varchar status
+        text admin_notes
+        timestamp verified_at
+        timestamp rejected_at
+        text rejected_reason
+        varchar transaction_id
+        varchar snap_token
+        varchar payment_type
+        varchar transaction_status
+        varchar fraud_status
+        timestamp paid_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    USERS ||--o{ CARTS : "has"
+    CARTS ||--o{ CART_ITEMS : "contains"
+    CART_ITEMS }o--|| PRODUCTS : "references"
+
+    USERS ||--o{ SHIPPING_ADDRESSES : "has"
+    USERS ||--o{ ORDERS : "places"
+    SHIPPING_ADDRESSES ||--o{ ORDERS : "used_in"
+    ORDERS ||--o{ ORDER_ITEMS : "contains"
+    ORDERS ||--o| PAYMENTS : "has"
+    ORDER_ITEMS }o--|| PRODUCTS : "references"
+
+    CATEGORIES ||--o{ PRODUCTS : "contains"
+    SUPPLIERS ||--o{ STOCK_INS : "supplies"
+    PRODUCTS ||--o{ STOCK_INS : "receives"
+    PRODUCTS ||--o{ STOCK_OUTS : "loses"
+    PRODUCTS ||--o{ STOCK_HISTORIES : "tracked_in"
+        </div>
+    </div>
+
+    <!-- DETAIL TABEL -->
+    <div class="section" id="tables">
+        <h2>Detail Struktur Tabel</h2>
+
+        <h3>USERS</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td>id</td><td><span class="badge badge-pk">BIGINT PK</span></td><td>Auto Increment</td></tr>
+                <tr><td>name</td><td>VARCHAR</td><td>Nama pengguna</td></tr>
+                <tr><td>email</td><td>VARCHAR UNIQUE</td><td>Email untuk login</td></tr>
+                <tr><td>role</td><td><span class="badge badge-enum">ENUM</span></td><td>'admin' | 'customer', default 'customer'</td></tr>
+                <tr><td>password</td><td>VARCHAR</td><td>Hashed (bcrypt)</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>CATEGORIES</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td>id</td><td><span class="badge badge-pk">BIGINT PK</span></td><td>Auto Increment</td></tr>
+                <tr><td>name</td><td>VARCHAR</td><td>Nama kategori</td></tr>
+                <tr><td>description</td><td>TEXT</td><td>Deskripsi (nullable)</td></tr>
+                <tr><td>status</td><td><span class="badge badge-enum">ENUM</span></td><td>'active' | 'inactive', default 'active'</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>SUPPLIERS</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td>id</td><td><span class="badge badge-pk">BIGINT PK</span></td><td>Auto Increment</td></tr>
+                <tr><td>name</td><td>VARCHAR</td><td>Nama pemasok</td></tr>
+                <tr><td>phone</td><td>VARCHAR</td><td>Telepon (nullable)</td></tr>
+                <tr><td>address</td><td>TEXT</td><td>Alamat (nullable)</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>PRODUCTS</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td>id</td><td><span class="badge badge-pk">BIGINT PK</span></td><td>Auto Increment</td></tr>
+                <tr><td>category_id</td><td><span class="badge badge-fk">BIGINT FK</span></td><td>→ categories.id (CASCADE)</td></tr>
+                <tr><td>name</td><td>VARCHAR</td><td>Nama produk/motor</td></tr>
+                <tr><td>price</td><td>DECIMAL(10,2)</td><td>Harga jual</td></tr>
+                <tr><td>stock</td><td>INTEGER</td><td>Stok tersedia, default 0</td></tr>
+                <tr><td>description</td><td>TEXT</td><td>Deskripsi (nullable)</td></tr>
+                <tr><td>image</td><td>VARCHAR</td><td>Path gambar (nullable)</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>STOCK_INS</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td>id</td><td><span class="badge badge-pk">BIGINT PK</span></td><td>Auto Increment</td></tr>
+                <tr><td>product_id</td><td><span class="badge badge-fk">BIGINT FK</span></td><td>→ products.id (CASCADE)</td></tr>
+                <tr><td>supplier_id</td><td><span class="badge badge-fk">BIGINT FK</span></td><td>→ suppliers.id (SET NULL)</td></tr>
+                <tr><td>tanggal_masuk</td><td>DATE</td><td>Tanggal stok masuk</td></tr>
+                <tr><td>qty</td><td>INTEGER</td><td>Jumlah masuk</td></tr>
+                <tr><td>keterangan</td><td>TEXT</td><td>Keterangan (nullable)</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>STOCK_OUTS</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td>id</td><td><span class="badge badge-pk">BIGINT PK</span></td><td>Auto Increment</td></tr>
+                <tr><td>product_id</td><td><span class="badge badge-fk">BIGINT FK</span></td><td>→ products.id (CASCADE)</td></tr>
+                <tr><td>tanggal_keluar</td><td>DATE</td><td>Tanggal stok keluar</td></tr>
+                <tr><td>qty</td><td>INTEGER</td><td>Jumlah keluar</td></tr>
+                <tr><td>alasan</td><td><span class="badge badge-enum">ENUM</span></td><td>'rusak' | 'hilang' | 'kadaluarsa' | 'lainnya'</td></tr>
+                <tr><td>keterangan</td><td>TEXT</td><td>Keterangan (nullable)</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>STOCK_HISTORIES</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td>id</td><td><span class="badge badge-pk">BIGINT PK</span></td><td>Auto Increment</td></tr>
+                <tr><td>product_id</td><td><span class="badge badge-fk">BIGINT FK</span></td><td>→ products.id (CASCADE)</td></tr>
+                <tr><td>type</td><td><span class="badge badge-enum">ENUM</span></td><td>'in' | 'out' | 'sale'</td></tr>
+                <tr><td>qty</td><td>INTEGER</td><td>Jumlah perubahan</td></tr>
+                <tr><td>stock_before</td><td>INTEGER</td><td>Stok sebelum perubahan</td></tr>
+                <tr><td>stock_after</td><td>INTEGER</td><td>Stok sesudah perubahan</td></tr>
+                <tr><td>reference_id</td><td>UNSIGNED BIGINT</td><td>Polymorphic (nullable)</td></tr>
+                <tr><td>reference_type</td><td>VARCHAR</td><td>StockIn / StockOut / Order</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>CARTS & CART_ITEMS</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Tabel</th><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td rowspan="3">carts</td><td>id</td><td><span class="badge badge-pk">BIGINT PK</span></td><td>Auto Increment</td></tr>
+                <tr><td>user_id</td><td><span class="badge badge-fk">BIGINT FK</span></td><td>→ users.id (CASCADE)</td></tr>
+                <tr><td>timestamps</td><td>TIMESTAMP</td><td>created_at, updated_at</td></tr>
+                <tr><td rowspan="5">cart_items</td><td>id</td><td><span class="badge badge-pk">BIGINT PK</span></td><td>Auto Increment</td></tr>
+                <tr><td>cart_id</td><td><span class="badge badge-fk">BIGINT FK</span></td><td>→ carts.id (CASCADE)</td></tr>
+                <tr><td>product_id</td><td><span class="badge badge-fk">BIGINT FK</span></td><td>→ products.id (CASCADE)</td></tr>
+                <tr><td>qty</td><td>INTEGER</td><td>Jumlah item, default 1</td></tr>
+                <tr><td>price</td><td>DECIMAL(10,2)</td><td>Harga saat ditambahkan</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>SHIPPING_ADDRESSES</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td>id</td><td><span class="badge badge-pk">BIGINT PK</span></td><td>Auto Increment</td></tr>
+                <tr><td>user_id</td><td><span class="badge badge-fk">BIGINT FK</span></td><td>→ users.id (CASCADE)</td></tr>
+                <tr><td>recipient_name</td><td>VARCHAR</td><td>Nama penerima</td></tr>
+                <tr><td>phone</td><td>VARCHAR</td><td>Telepon</td></tr>
+                <tr><td>address</td><td>TEXT</td><td>Alamat lengkap</td></tr>
+                <tr><td>city</td><td>VARCHAR</td><td>Kota</td></tr>
+                <tr><td>province</td><td>VARCHAR</td><td>Provinsi</td></tr>
+                <tr><td>postal_code</td><td>VARCHAR</td><td>Kode pos</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>ORDERS & ORDER_ITEMS</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Tabel</th><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td rowspan="7">orders</td><td>id</td><td><span class="badge badge-pk">BIGINT PK</span></td><td>Auto Increment</td></tr>
+                <tr><td>user_id</td><td><span class="badge badge-fk">BIGINT FK</span></td><td>→ users.id (CASCADE)</td></tr>
+                <tr><td>shipping_address_id</td><td><span class="badge badge-fk">BIGINT FK</span></td><td>→ shipping_addresses.id (SET NULL)</td></tr>
+                <tr><td>order_number</td><td>VARCHAR UNIQUE</td><td>ORD-YYYYMMDD-XXXX</td></tr>
+                <tr><td>total</td><td>DECIMAL(10,2)</td><td>Total harga</td></tr>
+                <tr><td>status</td><td><span class="badge badge-enum">ENUM</span></td><td>pending|processed|shipped|completed|cancelled</td></tr>
+                <tr><td>payment_status</td><td><span class="badge badge-enum">ENUM</span></td><td>unpaid|pending|paid|rejected</td></tr>
+                <tr><td rowspan="5">order_items</td><td>id</td><td><span class="badge badge-pk">BIGINT PK</span></td><td>Auto Increment</td></tr>
+                <tr><td>order_id</td><td><span class="badge badge-fk">BIGINT FK</span></td><td>→ orders.id (CASCADE)</td></tr>
+                <tr><td>product_id</td><td><span class="badge badge-fk">BIGINT FK</span></td><td>→ products.id (CASCADE)</td></tr>
+                <tr><td>qty</td><td>INTEGER</td><td>Jumlah dibeli</td></tr>
+                <tr><td>price</td><td>DECIMAL(10,2)</td><td>Harga satuan</td></tr>
+            </tbody>
+        </table>
+        </div>
+
+        <h3>PAYMENTS</h3>
+        <div class="table-container">
+        <table>
+            <thead><tr><th>Kolom</th><th>Tipe</th><th>Keterangan</th></tr></thead>
+            <tbody>
+                <tr><td>id</td><td><span class="badge badge-pk">BIGINT PK</span></td><td>Auto Increment</td></tr>
+                <tr><td>order_id</td><td><span class="badge badge-fk">BIGINT FK</span></td><td>→ orders.id (CASCADE)</td></tr>
+                <tr><td>midtrans_transaction_id</td><td>VARCHAR</td><td>ID transaksi Midtrans (nullable)</td></tr>
+                <tr><td>payment_method</td><td>VARCHAR</td><td>Metode pembayaran (nullable)</td></tr>
+                <tr><td>proof</td><td>VARCHAR</td><td>Path bukti upload (nullable)</td></tr>
+                <tr><td>uploaded_at</td><td>TIMESTAMP</td><td>Waktu upload bukti (nullable)</td></tr>
+                <tr><td>status</td><td>VARCHAR(50)</td><td>pending/settlement/verified/rejected/deny/expire/cancel</td></tr>
+                <tr><td>admin_notes</td><td>TEXT</td><td>Catatan admin (nullable)</td></tr>
+                <tr><td>verified_at</td><td>TIMESTAMP</td><td>Waktu verifikasi (nullable)</td></tr>
+                <tr><td>rejected_at</td><td>TIMESTAMP</td><td>Waktu penolakan (nullable)</td></tr>
+                <tr><td>rejected_reason</td><td>TEXT</td><td>Alasan penolakan (nullable)</td></tr>
+                <tr><td>transaction_id</td><td>VARCHAR</td><td>ID transaksi Midtrans (nullable)</td></tr>
+                <tr><td>snap_token</td><td>VARCHAR</td><td>Token Snap Midtrans (nullable)</td></tr>
+                <tr><td>payment_type</td><td>VARCHAR</td><td>Tipe pembayaran (nullable)</td></tr>
+                <tr><td>transaction_status</td><td>VARCHAR</td><td>Status transaksi Midtrans (nullable)</td></tr>
+                <tr><td>fraud_status</td><td>VARCHAR</td><td>Status fraud check (nullable)</td></tr>
+                <tr><td>paid_at</td><td>TIMESTAMP</td><td>Waktu pembayaran berhasil (nullable)</td></tr>
+            </tbody>
+        </table>
+        </div>
+    </div>
+
+    <!-- USE CASE DIAGRAM -->
+    <div class="section" id="usecase">
+        <h2>2. Use Case Diagram</h2>
+
+        <h3>Aktor Sistem</h3>
+        <div class="stats">
+            <div class="stat-card">
+                <div class="number" style="font-size:1.4rem; color:#f59e0b;">Admin</div>
+                <div class="label">Pengelola Toko</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" style="font-size:1.4rem; color:#10b981;">Pelanggan</div>
+                <div class="label">Pembeli</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" style="font-size:1.4rem; color:#8b5cf6;">Sistem</div>
+                <div class="label">Proses Otomatis</div>
+            </div>
+            <div class="stat-card">
+                <div class="number" style="font-size:1.4rem; color:#ef4444;">Midtrans</div>
+                <div class="label">Payment Gateway</div>
+            </div>
+        </div>
+
+        <div class="mermaid">
+graph TB
+    subgraph Actors
+        Admin([Admin<br/>Pengelola Toko])
+        Customer([Pelanggan<br/>Pembeli])
+        System([Sistem<br/>Otomatis])
+        Midtrans([Midtrans<br/>Payment Gateway])
+    end
+
+    subgraph "Sistem Toko Motor Online"
+        UC01[UC-01: Login]
+        UC10[UC-10: Registrasi]
+        UC02[UC-02: Lihat Dashboard]
+        UC03[UC-03: Kelola Kategori]
+        UC04[UC-04: Kelola Produk]
+        UC05[UC-05: Catat Stok Masuk]
+        UC06[UC-06: Catat Stok Keluar]
+        UC07[UC-07: Lihat Riwayat Stok]
+        UC08[UC-08: Kelola Pesanan]
+        UC09[UC-09: Kelola Pembayaran]
+        UC20[UC-20: Laporan Stok]
+        UC22[UC-22: Laporan Penjualan]
+        UC24[UC-24: Lihat Statistik]
+        UC25[UC-25: Logout Admin]
+
+        UC11[UC-11: Lihat Katalog]
+        UC12[UC-12: Cari & Filter]
+        UC13[UC-13: Lihat Detail Produk]
+        UC14[UC-14: Kelola Keranjang]
+        UC15[UC-15: Checkout]
+        UC16[UC-16: Bayar Midtrans]
+        UC17[UC-17: Upload Bukti Bayar]
+        UC18[UC-18: Riwayat Pesanan]
+        UC19[UC-19: Detail Pesanan]
+        UC21[UC-21: Batalkan Pesanan]
+        UC23[UC-23: Kelola Alamat]
+        UC26[UC-26: Ubah Profil]
+        UC27[UC-27: Logout Pelanggan]
+
+        UC28[UC-28: Webhook Midtrans]
+        UC29[UC-29: Validasi Stok]
+        UC30[UC-30: Generate No. Pesanan]
+        UC31[UC-31: Update Stok Otomatis]
+        UC32[UC-32: Proses Pembayaran]
+        UC33[UC-33: Kirim Notifikasi]
+    end
+
+    Admin --> UC01
+    Admin --> UC02
+    Admin --> UC03
+    Admin --> UC04
+    Admin --> UC05
+    Admin --> UC06
+    Admin --> UC07
+    Admin --> UC08
+    Admin --> UC09
+    Admin --> UC20
+    Admin --> UC22
+    Admin --> UC24
+    Admin --> UC25
+
+    Customer --> UC10
+    Customer --> UC01
+    Customer --> UC11
+    Customer --> UC12
+    Customer --> UC13
+    Customer --> UC14
+    Customer --> UC15
+    Customer --> UC16
+    Customer --> UC17
+    Customer --> UC18
+    Customer --> UC19
+    Customer --> UC21
+    Customer --> UC23
+    Customer --> UC26
+    Customer --> UC27
+
+    System --> UC28
+    System --> UC29
+    System --> UC30
+    System --> UC31
+
+    Midtrans --> UC32
+    Midtrans --> UC33
+    UC33 --> UC28
+
+    UC04 -.->|include| UC03
+    UC05 -.->|include| UC31
+    UC06 -.->|include| UC31
+    UC08 -.->|include| UC31
+    UC15 -.->|include| UC29
+    UC15 -.->|include| UC30
+    UC15 -.->|include| UC31
+    UC21 -.->|include| UC31
+    UC14 -.->|extend| UC29
+        </div>
+    </div>
+
+    <!-- USE CASE ADMIN -->
+    <div class="section" id="usecase-admin">
+        <h2>2.1 Use Case — Admin</h2>
+        <div class="usecase-grid">
+            <div class="usecase-card">
+                <h4>UC-01: Login</h4>
+                <p>Masuk ke panel admin dengan email dan password</p>
+                <span class="actor-tag">Admin</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-02: Lihat Dashboard</h4>
+                <p>Menampilkan statistik: total produk, pelanggan, pesanan, pendapatan, stok minimum, grafik penjualan 7 hari</p>
+                <span class="actor-tag">Admin</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-03: Kelola Kategori</h4>
+                <p>CRUD kategori produk (tambah, lihat, ubah, hapus)</p>
+                <span class="actor-tag">Admin</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-04: Kelola Produk</h4>
+                <p>CRUD produk termasuk upload gambar dan pemilihan kategori. Include: UC-03</p>
+                <span class="actor-tag">Admin</span> <span class="actor-tag">include→ UC-03</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-05: Catat Stok Masuk</h4>
+                <p>Mencatat penerimaan stok dari pemasok. Include: UC-31 (Update Stok)</p>
+                <span class="actor-tag">Admin</span> <span class="actor-tag">include→ UC-31</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-06: Catat Stok Keluar</h4>
+                <p>Mencatat pengeluaran stok (rusak/hilang/kadaluarsa). Include: UC-31</p>
+                <span class="actor-tag">Admin</span> <span class="actor-tag">include→ UC-31</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-07: Lihat Riwayat Stok</h4>
+                <p>Menampilkan riwayat perubahan stok per produk</p>
+                <span class="actor-tag">Admin</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-08: Kelola Pesanan</h4>
+                <p>Menampilkan daftar pesanan, detail, dan mengubah status (pending→processed→shipped→completed/cancelled). Include: UC-31</p>
+                <span class="actor-tag">Admin</span> <span class="actor-tag">include→ UC-31</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-09: Kelola Pembayaran</h4>
+                <p>Verifikasi atau tolak pembayaran manual, download bukti pembayaran</p>
+                <span class="actor-tag">Admin</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-20: Laporan Stok</h4>
+                <p>Menampilkan laporan stok dengan filter kategori dan status</p>
+                <span class="actor-tag">Admin</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-22: Laporan Penjualan</h4>
+                <p>Menampilkan laporan penjualan dengan filter rentang tanggal dan produk terlaris</p>
+                <span class="actor-tag">Admin</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-24: Lihat Statistik</h4>
+                <p>Menampilkan statistik dashboard termasuk stok minimum dan grafik penjualan</p>
+                <span class="actor-tag">Admin</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-25: Logout</h4>
+                <p>Keluar dari sesi admin</p>
+                <span class="actor-tag">Admin</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- USE CASE PELANGGAN -->
+    <div class="section" id="usecase-customer">
+        <h2>2.2 Use Case — Pelanggan</h2>
+        <div class="usecase-grid">
+            <div class="usecase-card">
+                <h4>UC-10: Registrasi Akun</h4>
+                <p>Membuat akun baru dengan nama, email, password</p>
+                <span class="actor-tag">Pelanggan</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-01: Login</h4>
+                <p>Masuk ke sistem dengan email dan password</p>
+                <span class="actor-tag">Pelanggan</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-11: Lihat Katalog Produk</h4>
+                <p>Menampilkan daftar motor/produk dengan grid, paginasi 12/halaman</p>
+                <span class="actor-tag">Pelanggan</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-12: Cari & Filter Produk</h4>
+                <p>Mencari berdasarkan nama, kategori, merek, tahun, harga</p>
+                <span class="actor-tag">Pelanggan</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-13: Lihat Detail Produk</h4>
+                <p>Menampilkan informasi lengkap produk termasuk produk terkait dari kategori sama</p>
+                <span class="actor-tag">Pelanggan</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-14: Kelola Keranjang</h4>
+                <p>Menambah, mengubah jumlah, menghapus item di keranjang belanja. Extend: UC-29 (Validasi Stok)</p>
+                <span class="actor-tag">Pelanggan</span> <span class="actor-tag">extend→ UC-29</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-15: Checkout</h4>
+                <p>Memproses pesanan: pilih alamat, pilih metode bayar, konfirmasi. Include: UC-29, UC-30, UC-31</p>
+                <span class="actor-tag">Pelanggan</span> <span class="actor-tag">include→ UC-29</span> <span class="actor-tag">include→ UC-30</span> <span class="actor-tag">include→ UC-31</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-16: Bayar (Midtrans Snap)</h4>
+                <p>Membuka pop-up pembayaran Midtrans Snap (bank transfer, GO-PAY, ShopeePay)</p>
+                <span class="actor-tag">Pelanggan</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-17: Upload Bukti Pembayaran</h4>
+                <p>Mengunggah bukti transfer manual untuk verifikasi admin</p>
+                <span class="actor-tag">Pelanggan</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-18: Lihat Riwayat Pesanan</h4>
+                <p>Menampilkan daftar pesanan pelanggan dengan status dan paginasi</p>
+                <span class="actor-tag">Pelanggan</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-19: Lihat Detail Pesanan</h4>
+                <p>Menampilkan detail lengkap: item, status, pembayaran, pengiriman</p>
+                <span class="actor-tag">Pelanggan</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-21: Batalkan Pesanan</h4>
+                <p>Membatalkan pesanan dengan pengembalian stok otomatis. Include: UC-31</p>
+                <span class="actor-tag">Pelanggan</span> <span class="actor-tag">include→ UC-31</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-23: Kelola Alamat Pengiriman</h4>
+                <p>CRUD alamat pengiriman (tambah, ubah, hapus)</p>
+                <span class="actor-tag">Pelanggan</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-26: Ubah Profil</h4>
+                <p>Memperbarui nama dan email pada profil</p>
+                <span class="actor-tag">Pelanggan</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-27: Logout</h4>
+                <p>Keluar dari sesi pelanggan</p>
+                <span class="actor-tag">Pelanggan</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- USE CASE SISTEM -->
+    <div class="section" id="usecase-system">
+        <h2>2.3 Use Case — Sistem & Eksternal</h2>
+
+        <h3>Sistem (Otomatis)</h3>
+        <div class="usecase-grid">
+            <div class="usecase-card">
+                <h4>UC-28: Proses Webhook Midtrans</h4>
+                <p>Verifikasi tanda tangan SHA-512, update status pembayaran & pesanan, kembalikan stok jika gagal/expired</p>
+                <span class="actor-tag">Sistem</span> <span class="actor-tag">Midtrans</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-29: Validasi Stok</h4>
+                <p>Memeriksa ketersediaan stok saat tambah keranjang atau checkout</p>
+                <span class="actor-tag">Sistem</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-30: Generate Nomor Pesanan</h4>
+                <p>Membuat nomor unik dengan format ORD-YYYYMMDD-XXXX</p>
+                <span class="actor-tag">Sistem</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-31: Otomatis Update Stok</h4>
+                <p>Kurangi stok saat checkout, kembalikan saat batal/gagal, catat stock history</p>
+                <span class="actor-tag">Sistem</span>
+            </div>
+        </div>
+
+        <h3>Midtrans (External)</h3>
+        <div class="usecase-grid">
+            <div class="usecase-card">
+                <h4>UC-32: Proses Pembayaran</h4>
+                <p>Memproses transaksi pembayaran online pelanggan (bank transfer, e-wallet, dll)</p>
+                <span class="actor-tag">Midtrans</span>
+            </div>
+            <div class="usecase-card">
+                <h4>UC-33: Kirim Notifikasi Webhook</h4>
+                <p>Mengirim notifikasi status transaksi ke server via HTTP POST ke /midtrans/webhook</p>
+                <span class="actor-tag">Midtrans</span>
+            </div>
+        </div>
+
+        <h3>Include & Extend Relationships</h3>
+        <div class="mermaid">
+graph LR
+    UC04[UC-04: Kelola Produk] -.->|include| UC03[UC-03: Kelola Kategori]
+    UC05[UC-05: Stok Masuk] -.->|include| UC31[UC-31: Update Stok]
+    UC06[UC-06: Stok Keluar] -.->|include| UC31
+    UC08[UC-08: Kelola Pesanan] -.->|include| UC31
+    UC15[UC-15: Checkout] -.->|include| UC29[UC-29: Validasi Stok]
+    UC15 -.->|include| UC30[UC-30: Gen No. Pesanan]
+    UC15 -.->|include| UC31
+    UC21[UC-21: Batal Pesanan] -.->|include| UC31
+    UC14[UC-14: Keranjang] -.->|extend| UC29
+
+    style UC15 fill:#3b82f6,color:#fff
+    style UC31 fill:#10b981,color:#fff
+    style UC29 fill:#f59e0b,color:#000
+        </div>
+    </div>
+
+    <!-- ALUR PROSES -->
+    <div class="section" id="flows">
+        <h2>3. Alur Proses Utama</h2>
+
+        <h3>Alur Pembelian Pelanggan</h3>
+        <div class="mermaid">
+sequenceDiagram
+    participant P as Pelanggan
+    participant S as Sistem
+    participant M as Midtrans
+
+    P->>S: 1. Registrasi / Login
+    S-->>P: 2. Berhasil masuk
+
+    P->>S: 3. Browse katalog produk
+    S-->>P: 4. Tampilkan daftar produk
+
+    P->>S: 5. Tambah ke keranjang
+    S->>S: 6. Validasi stok
+    S-->>P: 7. Konfirmasi item ditambahkan
+
+    P->>S: 8. Checkout
+    S->>S: 9. Validasi stok ulang
+    S->>S: 10. Generate nomor pesanan
+    S->>S: 11. Buat order & order_items
+    S->>S: 12. Kurangi stok produk
+    S->>S: 13. Catat stock history
+    S-->>P: 14. Tampilkan halaman bayar
+
+    P->>S: 15. Pilih metode pembayaran
+    S->>M: 16. Inisialisasi Midtrans Snap
+    M-->>S: 17. Snap Token
+    S-->>P: 18. Pop-up pembayaran
+
+    P->>M: 19. Lakukan pembayaran
+    M-->>P: 20. Status pembayaran
+
+    alt Pembayaran Berhasil
+        M->>S: 21. Webhook: settlement
+        S->>S: 22. Update payment & order status
+        S->>S: 23. Update stok
+    else Pembayaran Gagal/Expired
+        M->>S: 21. Webhook: expire/cancel
+        S->>S: 22. Update status
+        S->>S: 23. Kembalikan stok
+    end
+
+    S-->>P: 24. Tampilkan status pesanan
+        </div>
+
+        <h3>Alur Verifikasi Pembayaran Manual</h3>
+        <div class="mermaid">
+sequenceDiagram
+    participant P as Pelanggan
+    participant S as Sistem
+    participant A as Admin
+
+    P->>S: 1. Upload bukti pembayaran
+    S->>S: 2. Simpan bukti & set status pending
+    S-->>A: 3. Notifikasi pembayaran baru
+
+    A->>S: 4. Lihat daftar pembayaran
+    S-->>A: 5. Tampilkan daftar pending
+
+    A->>S: 6. Lihat detail + download bukti
+    S-->>A: 7. Tampilkan detail
+
+    alt Verifikasi Diterima
+        A->>S: 8. Verifikasi pembayaran
+        S->>S: 9. Set status verified
+        S->>S: 10. Update order: payment_status = paid
+        S-->>P: 11. Notifikasi: Pembayaran diterima
+    else Ditolak
+        A->>S: 8. Tolak pembayaran + alasan
+        S->>S: 9. Set status rejected
+        S->>S: 10. Update order: payment_status = rejected
+        S-->>P: 11. Notifikasi: Pembayaran ditolak
+    end
+        </div>
+
+        <h3>Alur Manajemen Stok</h3>
+        <div class="mermaid">
+sequenceDiagram
+    participant A as Admin
+    participant S as Sistem
+
+    Note over A,S: Stok Masuk
+    A->>S: 1. Catat stok masuk (produk, supplier, qty)
+    S->>S: 2. Buat record stock_in
+    S->>S: 3. Tambahkan qty ke stok produk
+    S->>S: 4. Catat stock_history (type: in)
+    S-->>A: 5. Konfirmasi stok bertambah
+
+    Note over A,S: Stok Keluar
+    A->>S: 1. Catat stok keluar (produk, qty, alasan)
+    S->>S: 2. Validasi stok mencukupi
+    S->>S: 3. Buat record stock_out
+    S->>S: 4. Kurangi qty dari stok produk
+    S->>S: 5. Catat stock_history (type: out)
+    S-->>A: 6. Konfirmasi stok berkurang
+        </div>
+    </div>
+
+</div>
+
+<script>
+    mermaid.initialize({
+        startOnLoad: true,
+        theme: 'base',
+        themeVariables: {
+            primaryColor: '#3b82f6',
+            primaryTextColor: '#ffffff',
+            primaryBorderColor: '#2563eb',
+            lineColor: '#60a5fa',
+            secondaryColor: '#1e293b',
+            tertiaryColor: '#0f172a',
+            fontFamily: 'Segoe UI, sans-serif',
+            fontSize: '14px',
+        },
+        er: {
+            useMaxWidth: true,
+            layoutDirection: 'TB',
+        },
+        sequence: {
+            useMaxWidth: true,
+            actorMargin: 80,
+            messageFontSize: 13,
+        },
+    });
+</script>
+
+</body>
+</html>

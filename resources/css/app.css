@@ -1,0 +1,186 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #f0f2f5;
+    font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+}
+
+@layer components {
+  /* ===================== SOFT UI CARDS ===================== */
+  .soft-card {
+    background: #ffffff;
+    border: 0;
+    border-radius: 1rem;
+    box-shadow: 0 20px 27px 0 rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .soft-card:hover {
+    box-shadow: 0 20px 27px 0 rgba(0, 0, 0, 0.09);
+  }
+
+  /* ===================== SOFT UI BUTTONS ===================== */
+  .soft-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.75rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: -0.025rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-decoration: none;
+  }
+
+  .soft-btn-sm {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .soft-btn-block {
+    width: 100%;
+    text-align: center;
+  }
+
+  .soft-btn-primary {
+    color: #fff;
+    background-image: linear-gradient(310deg, #7928ca 0%, #ff0080 100%);
+    box-shadow: 0 3px 5px -1px rgba(203, 12, 159, 0.09),
+      0 10px 15px -3px rgba(203, 12, 159, 0.09),
+      0 8px 16px -6px rgba(203, 12, 159, 0.1);
+  }
+
+  .soft-btn-primary:hover {
+    color: #fff;
+    box-shadow: 0 3px 5px -1px rgba(203, 12, 159, 0.2),
+      0 10px 15px -3px rgba(203, 12, 159, 0.2),
+      0 8px 16px -6px rgba(203, 12, 159, 0.22);
+    transform: translateY(-1px);
+  }
+
+  .soft-btn-danger {
+    color: #fff;
+    background-image: linear-gradient(310deg, #ea0606 0%, #ff667c 100%);
+    box-shadow: 0 3px 5px -1px rgba(234, 6, 6, 0.09),
+      0 10px 15px -3px rgba(234, 6, 6, 0.09),
+      0 8px 16px -6px rgba(234, 6, 6, 0.1);
+  }
+
+  .soft-btn-danger:hover {
+    color: #fff;
+    box-shadow: 0 3px 5px -1px rgba(234, 6, 6, 0.2),
+      0 10px 15px -3px rgba(234, 6, 6, 0.2),
+      0 8px 16px -6px rgba(234, 6, 6, 0.22);
+    transform: translateY(-1px);
+  }
+
+  .soft-btn-success {
+    color: #fff;
+    background-image: linear-gradient(310deg, #17ad37 0%, #98ec2d 100%);
+    box-shadow: 0 3px 5px -1px rgba(23, 173, 55, 0.09),
+      0 10px 15px -3px rgba(23, 173, 55, 0.09),
+      0 8px 16px -6px rgba(23, 173, 55, 0.1);
+  }
+
+  .soft-btn-success:hover {
+    color: #fff;
+    box-shadow: 0 3px 5px -1px rgba(23, 173, 55, 0.2),
+      0 10px 15px -3px rgba(23, 173, 55, 0.2),
+      0 8px 16px -6px rgba(23, 173, 55, 0.22);
+    transform: translateY(-1px);
+  }
+
+  .soft-btn-outline {
+    color: #cb0c9f;
+    background: #ffffff;
+    border: 1px solid rgba(203, 12, 159, 0.4);
+  }
+
+  .soft-btn-outline:hover {
+    color: #cb0c9f;
+    background: #f8f9fa;
+  }
+
+  /* ===================== SOFT UI INPUTS ===================== */
+  .soft-input {
+    border: 1px solid #d2d6da;
+    background-color: #ffffff;
+    border-radius: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: #344767;
+    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.06);
+    transition: all 0.2s ease;
+  }
+
+  .soft-input:focus {
+    outline: none;
+    border-color: #e293d3;
+    box-shadow: 0 0 0 3px rgba(203, 12, 159, 0.15);
+  }
+
+  .soft-input-sm {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  /* ===================== SOFT FILE INPUT ===================== */
+  .soft-file {
+    font-size: 0.875rem;
+    color: #4b5563;
+  }
+
+  .soft-file::file-selector-button {
+    margin-right: 0.75rem;
+    border: 0;
+    border-radius: 0.6rem;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #fff;
+    background-image: linear-gradient(310deg, #7928ca 0%, #ff0080 100%);
+    box-shadow: 0 3px 5px -1px rgba(203, 12, 159, 0.1);
+    cursor: pointer;
+  }
+
+  .soft-file::file-selector-button:hover {
+    background-image: linear-gradient(310deg, #5e1e9e 0%, #d9006e 100%);
+  }
+
+  /* ===================== SOFT UI TABLES ===================== */
+  .soft-table thead th {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: #8392ab;
+    letter-spacing: 0.05rem;
+    border-bottom: 1px solid #e9ecef;
+  }
+
+  .soft-table tbody tr:hover {
+    background-color: rgba(203, 12, 159, 0.03);
+  }
+
+  /* ===================== SOFT UI PAGINATION ===================== */
+  .soft-pagination .page-link {
+    border-radius: 0.75rem;
+    border: 0;
+    box-shadow: 0 3px 9px rgba(0, 0, 0, 0.05);
+    margin: 0 0.25rem;
+    color: #67748e;
+    font-size: 0.875rem;
+  }
+
+  .soft-pagination .page-item.active .page-link {
+    background-image: linear-gradient(310deg, #7928ca 0%, #ff0080 100%);
+    color: #fff;
+  }
+}
